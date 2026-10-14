@@ -9,7 +9,7 @@ An agent skill for the HITL-Work pipeline. Reads completed UI implementations an
 
 ## Workflow State
 
-Read `.hitl-work/features/<feature-slug>/status.md` before extraction. Confirm QA passed and no blocking findings remain, then record the skill-file path and `Complete` status in Artifact Index. Set Current Handoff to Documentation or `Complete`.
+Read the issue body before extraction. Confirm QA passed and no blocking findings remain, then record the skill-file path and `Complete` status in Artifact Index. Set Current Handoff to Documentation or `Complete`.
 
 ---
 
@@ -44,7 +44,7 @@ The UI Skill File is the cached, human-verified answer to "what does this projec
 ### Step 1 — Gather Inputs
 Before extracting anything, collect:
 
-1. **ui-spec.md** from the completed feature (output of UI/UX Planner)
+1. UI spec from the completed feature (issue comment by UI/UX Planner)
 2. **The implemented view files** — read the actual code, not just the spec
 3. **The existing skill file** (if one exists: `skills/ams-ui.md`, `skills/orca-ui.md`, etc.)
 4. **QA sign-off** — confirm the feature passed QA before extracting. Do not extract from unverified implementations.
@@ -615,7 +615,7 @@ Track what was added or changed in each extraction pass.
 - NEVER invent tokens — only document what is confirmed in production code
 - NEVER overwrite an existing confirmed entry without explicit justification
 - NEVER pad the skill file — if nothing new was found, say so and close
-- ALWAYS read the actual implemented code, not just the ui-spec.md — specs drift
+- ALWAYS read the actual implemented code, not just the UI spec comment — specs drift
 - ALWAYS diff against existing skill file before writing — avoid duplicate entries
 - ALWAYS move deprecated patterns to Anti-Patterns section — never silently delete
 - ALWAYS update the Changelog section with every extraction pass

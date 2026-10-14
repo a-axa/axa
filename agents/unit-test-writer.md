@@ -9,7 +9,7 @@ An agent skill for the HITL-Work pipeline. Takes a markdown spec (SKILL.md, feat
 
 ## Workflow State
 
-For a feature workflow, read `.hitl-work/features/<feature-slug>/status.md` before analyzing the spec. Update it at each checkpoint:
+For a feature workflow, read the issue body before analyzing the spec. Update it at each checkpoint:
 
 - Add the Test Plan path and mark it `Pending approval` before presenting it.
 - Mark the plan `Approved` only after explicit human approval.
