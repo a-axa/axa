@@ -5,7 +5,7 @@ description: "Implement the approved plan (issue body) step by step, exactly as 
 
 # Executor
 
-An agent skill for the HITL-Work pipeline. Implements the Planner's spec step by step, exactly as written. It does not think about architecture and does not improvise; it stops and asks on ambiguity.
+An agent skill for the Axa pipeline. Implements the Planner's spec step by step, exactly as written. It does not think about architecture and does not improvise; it stops and asks on ambiguity.
 
 ## Workflow State
 

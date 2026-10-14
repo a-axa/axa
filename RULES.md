@@ -1,27 +1,20 @@
 # Axa Rules
 
-Detail rules behind `SKILL.md` (the index). Same HITL·Work pipeline, but the workflow state lives in a GitHub issue instead of local files. Read the sections relevant to your stage before acting.
+Detail rules behind `SKILL.md` (the index). The workflow state lives in a GitHub issue instead of local files. Read the sections relevant to your stage before acting.
 
 ## Prerequisites
 
 - `gh` CLI installed and authenticated (`gh auth status`). STOP if it is not: ask the user to set it up before any agent runs.
 - The repository must be a GitHub repo (`gh` resolves the current repo). Axa does not work outside GitHub.
 
-## State mapping
-
-Agent files were written for HITL·Work's local files. In Axa, translate every reference:
-- `status.md` -> the GitHub issue body for this feature (read: `gh issue view <number>`; write: `gh issue edit <number> --body-file <file>`)
-- `.hitl-work/features/<slug>/` artifacts (`plan.md`, `qa-report.md`, etc.) -> the issue body (plan + live status) and issue comments (reports, handoffs)
-- Never create `.hitl-work/features/` directories. The only local files are `.hitl-work/preferences.md` and `.hitl-work/tickets.md`.
-
 ## Issue State & Artifacts
 
-For each non-trivial feature, create one GitHub issue and record `slug -> issue number` in `.hitl-work/tickets.md`. The issue body is the live state: copy `templates/issue-template.md` into it at creation. Every agent must read the issue body before acting (`gh issue view <number>`) and update only the fields belonging to its role before handoff. Keep the plan, routing decisions, findings ledger, verification evidence, and session log current at every handoff.
+For each non-trivial feature, create one GitHub issue and record `slug -> issue number` in `.axa/tickets.md`. The issue body is the live state: copy `templates/issue-template.md` into it at creation. Every agent must read the issue body before acting (`gh issue view <number>`) and update only the fields belonging to its role before handoff. Keep the plan, routing decisions, findings ledger, verification evidence, and session log current at every handoff.
 
 - **Issue body** = plan + live status (updated in place via `gh issue edit`)
 - **Issue comments** = handoff log and reports (each stage posts one summary comment: what was done, key decisions, what is next)
 - **Labels** = pipeline stage: `axa:planning`, `axa:executing`, `axa:qa`, `axa:review`, `axa:done`
-- **Local files** = only `.hitl-work/preferences.md` (anti-slop etc.) and `.hitl-work/tickets.md` (slug -> issue number registry)
+- **Local files** = only `.axa/preferences.md` (anti-slop etc.) and `.axa/tickets.md` (slug -> issue number registry)
 
 **Start where:**
 - Large PRD -> **Decomposer** (task list posted as an issue comment)
@@ -33,16 +26,16 @@ For each non-trivial feature, create one GitHub issue and record `slug -> issue 
 
 ## Companion Skill: anti-slop (opt-in)
 
-HITL·Work pairs well with [anti-slop](https://github.com/miqdadbadjuber/anti-slop), a skill set that filters generic AI-generated code, UI, and copy. Integration is strictly opt-in. Run this gate ONCE per project, BEFORE any agent runs:
+Axa pairs well with [anti-slop](https://github.com/miqdadbadjuber/anti-slop), a skill set that filters generic AI-generated code, UI, and copy. Integration is strictly opt-in. Run this gate ONCE per project, BEFORE any agent runs:
 
-1. **Detect.** Run `npx skills list | grep -i antislop`. If nothing matches, inspect the active agent's skill directories (`.claude/skills/`, `.agents/skills/`, `~/.claude/skills/`, `~/.agents/skills/`, or the equivalent). The result must be exactly one of: INSTALLED or NOT INSTALLED. Write the result to `.hitl-work/preferences.md` (create `.hitl-work/` and the file if they do not exist).
-2. **Gate.** If the result is NOT INSTALLED and `.hitl-work/preferences.md` contains no `antislop:` entry: STOP. Do not start the Planner, Executor, QA, or any other agent. Ask the user exactly this: "anti-slop is not installed. Install it and combine with HITL·Work so QA and Documentation also check outputs for AI slop? (yes / yes, always / no / never ask again)". Wait for the user's answer, then:
-   - `yes` → run `npx skills add miqdadbadjuber/anti-slop`; record `antislop: installed` in `.hitl-work/preferences.md`.
-   - `yes, always` → same as `yes`, plus record in `~/.hitl-work/preferences.md` so future projects skip this gate.
-   - `no` → record `antislop: declined` in `.hitl-work/preferences.md`; continue without it.
-   - `never ask again` → record in `~/.hitl-work/preferences.md`; never run this gate again on any project.
+1. **Detect.** Run `npx skills list | grep -i antislop`. If nothing matches, inspect the active agent's skill directories (`.claude/skills/`, `.agents/skills/`, `~/.claude/skills/`, `~/.agents/skills/`, or the equivalent). The result must be exactly one of: INSTALLED or NOT INSTALLED. Write the result to `.axa/preferences.md` (create `.axa/` and the file if they do not exist).
+2. **Gate.** If the result is NOT INSTALLED and `.axa/preferences.md` contains no `antislop:` entry: STOP. Do not start the Planner, Executor, QA, or any other agent. Ask the user exactly this: "anti-slop is not installed. Install it and combine with Axa so QA and Documentation also check outputs for AI slop? (yes / yes, always / no / never ask again)". Wait for the user's answer, then:
+   - `yes` → run `npx skills add miqdadbadjuber/anti-slop`; record `antislop: installed` in `.axa/preferences.md`.
+   - `yes, always` → same as `yes`, plus record in `~/.axa/preferences.md` so future projects skip this gate.
+   - `no` → record `antislop: declined` in `.axa/preferences.md`; continue without it.
+   - `never ask again` → record in `~/.axa/preferences.md`; never run this gate again on any project.
    Only after the answer is recorded may the pipeline continue.
-3. **Combine only when present.** When the anti-slop skill is available (pre-installed or just installed), the Planner, QA, and Documentation agents must read its core rules. The Planner applies them while writing `plan.md` (see the Anti-slop hard rules in `agents/planner.md`); QA and Documentation add an explicit slop check to their verdicts: reject generic AI-pattern code, copy, and UI. Note: `npx skills add` copies the skill folders but does not write a session auto-load pointer; HITL·Work agents load the anti-slop rules explicitly, so no pointer is needed.
+3. **Combine only when present.** When the anti-slop skill is available (pre-installed or just installed), the Planner, QA, and Documentation agents must read its core rules. The Planner applies them while writing the plan (see the Anti-slop hard rules in `agents/planner.md`); QA and Documentation add an explicit slop check to their verdicts: reject generic AI-pattern code, copy, and UI. Note: `npx skills add` copies the skill folders but does not write a session auto-load pointer; Axa agents load the anti-slop rules explicitly, so no pointer is needed.
 
 ## Agents
 
@@ -80,7 +73,7 @@ The user explicitly chooses the mode. Before any agent runs: STOP, present all t
 
 ## Lean Code Discipline
 
-HITL·Work wraps code in a lot of process. These values keep the code itself lean. They were adapted from an audit of ponytail (https://github.com/DietrichGebert/ponytail, MIT). No external skill is required: the values below are native HITL·Work rules.
+Axa wraps code in a lot of process. These values keep the code itself lean. They were adapted from an audit of ponytail (https://github.com/DietrichGebert/ponytail, MIT). No external skill is required: the values below are native Axa rules.
 
 **Planner:** before writing the spec, run the minimality ladder for every planned piece of new code. Rungs: 1. does it need to exist, 2. already in this codebase, 3. standard library or platform feature, 4. installed dependency (never add one for a few lines), 5. one line a reader gets at a glance, 6. otherwise the minimum that works. Record the justifying rung (or the existing code reused) per spec item. This replaces the checkbox-style YAGNI check with per-item justification. Full Pipeline uses the full ladder; Standard keeps the YAGNI check without per-item records; Quick is trivially minimal by definition.
 
@@ -126,7 +119,7 @@ When two specialist reviews contradict each other (for example Security requires
 
 If your context was compacted, the session restarted, or you are picking up existing work:
 
-1. Find the feature state: look up the slug in `.hitl-work/tickets.md` to get the issue number. If several features exist, continue the most recently updated one, or ask the user which one.
+1. Find the feature state: look up the slug in `.axa/tickets.md` to get the issue number. If several features exist, continue the most recently updated one, or ask the user which one.
 2. Read the issue body and recent comments in full (`gh issue view <number> --comments`). Trust them over your memory of this conversation.
 3. Continue from the **Current Handoff** field in the issue body. Do not re-run stages already marked complete.
 4. If no ticket exists for the requested work, start the pipeline normally (create the issue first).
@@ -136,8 +129,8 @@ If your context was compacted, the session restarted, or you are picking up exis
 1. **Read the agent file before acting.** Never summarize from memory.
 2. **Follow each agent's process exactly.** Boundaries are intentional.
 3. **Respect the selected mode.** Full Pipeline requires Planner and QA; Standard requires Planner Lite and QA; Quick may skip Planner only with a recorded Quick Change Record and minimal QA. Don't skip QA to ship.
-4. **HITL checkpoints (two channels):**
-   - Chat (primary): stop and wait for the user's approval in the harness, exactly like HITL·Work.
+4. **Checkpoints (two channels):**
+   - Chat (primary): stop and wait for the user's approval in the harness.
    - Issue (async): at every checkpoint also post a comment (`gh issue comment`) summarizing what needs approval. A teammate may approve via issue reply or reaction.
    - Either channel unblocks; record which channel approved and by whom.
    - After Decomposer -> human reviews task list. After Planner -> optionally run Doubt Review. After Executor -> optionally run Unit Test Writer (recommended for non-trivial logic). After Unit Test Writer -> QA uses generated tests as baseline. QA FAIL -> return to Executor.

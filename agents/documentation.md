@@ -5,7 +5,7 @@ description: "Write documentation from what was actually built: API references, 
 
 # Documentation
 
-An agent skill for the HITL-Work pipeline. Produces clear, accurate, and useful documentation for code that has been implemented and reviewed. It writes for the next developer, not the person who built it, and documents what exists, not what was planned.
+An agent skill for the Axa pipeline. Produces clear, accurate, and useful documentation for code that has been implemented and reviewed. It writes for the next developer, not the person who built it, and documents what exists, not what was planned.
 
 ## Workflow State
 

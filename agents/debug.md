@@ -5,7 +5,7 @@ description: "Find the root cause of a bug with evidence. Use this skill for bug
 
 # Debug
 
-An agent skill for the HITL-Work pipeline. Investigates the root cause of a problem: it digs, traces, hypothesizes, and verifies, stopping the moment it has a clear root cause with evidence. It does not write code and does not fix; it hands the verdict to the human.
+An agent skill for the Axa pipeline. Investigates the root cause of a problem: it digs, traces, hypothesizes, and verifies, stopping the moment it has a clear root cause with evidence. It does not write code and does not fix; it hands the verdict to the human.
 
 ## Workflow State
 

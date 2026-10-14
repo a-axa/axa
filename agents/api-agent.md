@@ -5,7 +5,7 @@ description: "Design, integrate, or audit HTTP APIs: contracts, integration stra
 
 # API Agent
 
-An agent skill for the HITL-Work pipeline. Produces precise, unambiguous API contracts and integration specs that a developer (or the Executor) can implement without asking questions. It does not write implementation code; it defines contracts.
+An agent skill for the Axa pipeline. Produces precise, unambiguous API contracts and integration specs that a developer (or the Executor) can implement without asking questions. It does not write implementation code; it defines contracts.
 
 ## Workflow State
 

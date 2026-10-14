@@ -1,21 +1,8 @@
-# Axa — HITL Workflow on GitHub Issues
+# Axa — Human-in-the-Loop Workflow on GitHub Issues
 
 Vibe coding is fast. It's also how you ship bugs, lose context between sessions, and end up with code nobody can audit — including your team.
 
-Axa keeps the speed. It adds structure. Same 17-agent HITL·Work pipeline, but the workflow state lives in a **GitHub issue** instead of local files: the issue body is the live plan + status, comments are the handoff log, labels track the stage. Your team can follow, review, and audit every feature without cloning anything.
-
-## Axa vs HITL·Work
-
-| | HITL·Work | Axa |
-|---|---|---|
-| Workflow state | `.hitl-work/features/<slug>/status.md` | GitHub issue body |
-| Handoff log | Session Log table in `status.md` | Issue comments |
-| Stage tracking | Local files | Labels (`axa:planning` … `axa:done`) |
-| Ticket registry | n/a | `.hitl-work/tickets.md` (slug → issue #) |
-| Works offline | Yes | No — requires GitHub |
-| Best for | Solo dev, local-first | Teams, shared audit trail |
-
-The 17 agent files are the same pipeline with one translation rule: wherever an agent file says `status.md`, read the issue body instead.
+Axa keeps the speed. It adds structure. 17 agents, one job each. The workflow state lives in a **GitHub issue**: the issue body is the live plan + status, comments are the handoff log, labels track the stage. Your team can follow, review, and audit every feature without cloning anything.
 
 ## Prerequisites
 
@@ -24,8 +11,8 @@ The 17 agent files are the same pipeline with one translation rule: wherever an 
 ## Quick start
 
 1. Install the skill: `npx skills add iskandar221201/axa`
-2. In your project: `mkdir -p .hitl-work && cp <skill>/templates/tickets.template.md .hitl-work/tickets.md`
-3. Start a feature: the agent creates a GitHub issue from `templates/issue-template.md`, records it in `.hitl-work/tickets.md`, and runs the pipeline.
+2. In your project: `mkdir -p .axa && cp <skill>/templates/tickets.template.md .axa/tickets.md`
+3. Start a feature: the agent creates a GitHub issue from `templates/issue-template.md`, records it in `.axa/tickets.md`, and runs the pipeline.
 4. Checkpoints happen in chat (primary) and as issue comments (async for teammates). The plan is written to the issue body only after you approve the draft in chat.
 
 ## Agents

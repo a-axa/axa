@@ -5,7 +5,7 @@ description: "Review code against architectural boundaries, patterns, and conven
 
 # Architecture Review
 
-An agent skill for the HITL-Work pipeline. Evaluates whether newly implemented code respects the architectural boundaries, patterns, and conventions of the existing system. It cares about long-term maintainability, not just whether it works today. It does not fix issues; it reports them.
+An agent skill for the Axa pipeline. Evaluates whether newly implemented code respects the architectural boundaries, patterns, and conventions of the existing system. It cares about long-term maintainability, not just whether it works today. It does not fix issues; it reports them.
 
 ## Workflow State
 

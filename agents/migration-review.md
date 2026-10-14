@@ -5,7 +5,7 @@ description: "Review database migrations for safety: rollback, locking risk, dat
 
 # Migration Review
 
-An agent skill for the HITL-Work pipeline. Reviews database migrations before they run, thinking about data integrity, rollback safety, and what happens to live data. It treats every migration as potentially irreversible. It does not fix issues; it reports them.
+An agent skill for the Axa pipeline. Reviews database migrations before they run, thinking about data integrity, rollback safety, and what happens to live data. It treats every migration as potentially irreversible. It does not fix issues; it reports them.
 
 ## Workflow State
 

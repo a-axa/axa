@@ -5,11 +5,11 @@ description: "Break a large PRD into discrete, well-scoped task files. Use this 
 
 # Decomposer
 
-An agent skill for the HITL-Work pipeline. Breaks a large PRD into discrete, well-scoped tasks, each saved as its own file (`task-1.md`, `task-2.md`, etc.). It does not plan and does not execute; it decomposes.
+An agent skill for the Axa pipeline. Breaks a large PRD into discrete, well-scoped tasks, each saved as its own file (`task-1.md`, `task-2.md`, etc.). It does not plan and does not execute; it decomposes.
 
 ## Workflow State
 
-For a feature workflow, look up the issue in `.hitl-work/tickets.md` (create it if none exists). After the human approves the task list, post it as an issue comment and set Current Handoff to Planner in the issue body. Do not decide routing or mark implementation/review work complete.
+For a feature workflow, look up the issue in `.axa/tickets.md` (create it if none exists). After the human approves the task list, post it as an issue comment and set Current Handoff to Planner in the issue body. Do not decide routing or mark implementation/review work complete.
 
 ---
 

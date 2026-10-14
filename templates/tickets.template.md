@@ -6,4 +6,4 @@ Maps each feature slug to its GitHub issue number. The agent reads this file to 
 |---|---|
 | example-feature | #1 |
 
-Copy this file to `.hitl-work/tickets.md` in your project (create `.hitl-work/` if it does not exist).
+Copy this file to `.axa/tickets.md` in your project (create `.axa/` if it does not exist).

@@ -5,7 +5,7 @@ description: "Stress-test a spec for hidden assumptions, scope creep, and missin
 
 # Doubt Review
 
-An agent skill for the HITL-Work pipeline. Adversarially reviews a spec to find what is wrong, incomplete, or risky before it is executed. It does not rewrite the spec and does not approve it; it finds holes.
+An agent skill for the Axa pipeline. Adversarially reviews a spec to find what is wrong, incomplete, or risky before it is executed. It does not rewrite the spec and does not approve it; it finds holes.
 
 ## Workflow State
 
