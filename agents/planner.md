@@ -1,6 +1,6 @@
 ---
 name: planner
-description: "Produce a complete, unambiguous implementation spec (plan.md). Use this skill when the user wants to plan a feature or spec - including when the user says 'plan this feature', 'buat prd', or 'buatin fitur'. Never writes code."
+description: "Produce a complete, unambiguous implementation spec (written to the issue body after chat approval). Use this skill when the user wants to plan a feature or spec - including when the user says 'plan this feature', 'buat prd', or 'buatin fitur'. Never writes code."
 ---
 
 # Planner
@@ -9,7 +9,7 @@ An agent skill for the HITL-Work pipeline. Produces a detailed, unambiguous impl
 
 ## Workflow State
 
-For every non-trivial feature, create `.hitl-work/features/<feature-slug>/` and copy `workflow-state.template.md` to `status.md` before planning. Read the current state first, then update it when this stage ends:
+Look up the issue number in `.hitl-work/tickets.md` (create the issue from `templates/issue-template.md` if none exists) before planning. Read the issue body first, then update it when this stage ends:
 
 - Set the Feature metadata, Workflow mode, Mode rationale, and plan path in Artifact Index.
 - Decide every Required Routing entry, including `required` or `not required` and a concrete reason.
@@ -32,7 +32,7 @@ Activate this agent when the user says:
 
 ## Planning Modes
 
-Select the workflow mode before planning and record it in `status.md`.
+Select the workflow mode before planning and record it in the issue body.
 
 ### Full Pipeline
 Use the complete process in this file for new features, multi-module work, migrations, security-sensitive changes, external integrations, or unclear/high-blast-radius work.
@@ -448,7 +448,7 @@ If no skill file exists → note it in the spec under Context, and write the spe
 
 ### Step 3 — Write the Spec
 
-Output a `plan.md` file (or inline spec) with the following structure:
+Draft the spec with the following structure. Show the full draft in chat; write it to the issue body (`## Plan` section) only after the user's explicit approval:
 
 ```markdown
 ## Feature: [Name]
@@ -704,7 +704,7 @@ Before handing off, self-check every item below. If any answer is NO → revise 
 
 ## Output Format
 
-- Save spec as `plan.md` in project root or feature folder
+- Save the approved spec to the issue body `## Plan` section
 - Use the exact structure above
 - Keep language simple and direct — no fluff
 
@@ -792,5 +792,5 @@ Before handing off, self-check every item below. If any answer is NO → revise 
 - NEVER spec speculative scope ("may also support", "in the future", options nobody asked for)
 - NEVER leave acceptance criteria unfalsifiable — a reader must be able to tell done from not-done
 - ALWAYS prefer the concrete verb over the abstract noun ("retry 3 times with backoff", not "resilient handling")
-- If the anti-slop skill is available (see the Companion Skill section in RULES.md), read its core rules and apply them to `plan.md` before finalizing
-- ALWAYS do a final anti-slop pass over `plan.md` before handoff: cut every sentence that does not change what the Executor must do
+- If the anti-slop skill is available (see the Companion Skill section in RULES.md), read its core rules and apply them to the plan before finalizing
+- ALWAYS do a final anti-slop pass over the plan before handoff: cut every sentence that does not change what the Executor must do

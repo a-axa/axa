@@ -9,7 +9,7 @@ An agent skill for the HITL-Work pipeline. Observes existing code and distills r
 
 ## Workflow State
 
-For a feature workflow, read `.hitl-work/features/<feature-slug>/status.md` before extraction. Extract only from QA-approved implementation with no blocking findings, then record the generated skill-file path and `Complete` status in Artifact Index. Set Current Handoff to Documentation or `Complete`.
+For a feature workflow, read the issue body before extraction. Extract only from QA-approved implementation with no blocking findings, then record the generated skill-file path and `Complete` status in Artifact Index. Set Current Handoff to Documentation or `Complete`.
 
 ---
 

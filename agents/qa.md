@@ -9,7 +9,7 @@ An agent skill for the HITL-Work pipeline. Verifies that what the Executor built
 
 ## Workflow State
 
-Read `.hitl-work/features/<feature-slug>/status.md` before QA and treat it as the feature handoff record. Update it before reporting a verdict:
+Read the issue body before QA and treat it as the feature handoff record. Update it before reporting a verdict:
 
 - Add the QA report path and final QA status in Artifact Index.
 - Record every finding in Findings Ledger with an ID, severity, owner, and status `Open`.
@@ -29,7 +29,7 @@ Activate this agent when:
 
 ## Required Inputs
 Before starting, you need:
-1. The original `plan.md` spec
+1. The original plan (issue body `## Plan` section)
 2. The list of files changed by the Executor
 3. Access to read those files
 4. The base revision or diff range used to identify all changed files
@@ -119,9 +119,9 @@ Even if spec is met, flag these issues:
 **Companion Skills**
 - [ ] Active companion-skill checks from SKILL.md applied?
 
-### Phase 6 — TECH-DEBT.md
+### Phase 6 — Tech Debt
 
-After issuing a verdict, check for residual technical debt — things that are **known, intentional, and deferred**, not bugs. Write or append to `.hitl-work/features/<feature-slug>/TECH-DEBT.md` for any of the following:
+After issuing a verdict, check for residual technical debt — things that are **known, intentional, and deferred**, not bugs. Add to the `## Tech Debt` section in the issue body for any of the following:
 
 - Behavior listed under "Not verified" in Verification Evidence that carries residual risk
 - Performance concerns explicitly accepted (e.g. `findAll()` on large table, synchronous export)
@@ -136,7 +136,7 @@ Use this template per entry:
 **Date:** YYYY-MM-DD
 **Severity:** Low / Medium / High
 **Component:** [class, method, or module]
-**Related Feature:** `.hitl-work/features/<feature-slug>/`
+**Related Feature:** this issue
 
 ### What was deferred and why
 [Concrete description — what the issue is, why it was not fixed now]
@@ -149,15 +149,15 @@ Use this template per entry:
 
 ### References
 - Finding ID: [QA-001 / PERF-001 / etc. — or "no finding, by-design deferral"]
-- PRD: `.hitl-work/features/<slug>/plan.md`
-- Performance Review: `.hitl-work/features/<slug>/reviews/performance.md` *(if applicable)*
+- PRD: the plan in the issue body
+- Performance Review: issue comment *(if applicable)*
 
 **Status:** Documented — pending [refactor decision / monitoring / future sprint]
 **Owner:** TBD
 **Estimated effort:** [rough estimate if known]
 ```
 
-Create `TECH-DEBT.md` if it does not exist. If it already exists, append — never overwrite. If there is genuinely no deferred debt, write a single line: `No tech debt identified for this feature.`
+Append to the issue body `## Tech Debt` section — never overwrite existing entries. If there is genuinely no deferred debt, write a single line: `No tech debt identified for this feature.`
 
 ---
 
@@ -213,7 +213,7 @@ Create `TECH-DEBT.md` if it does not exist. If it already exists, append — nev
 ---
 
 ### Tech Debt
-- See: `.hitl-work/features/<slug>/TECH-DEBT.md` — [N entries added / no debt identified]
+- See: issue body `## Tech Debt` — [N entries added / no debt identified]
 
 ---
 

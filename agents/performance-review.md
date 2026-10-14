@@ -9,7 +9,7 @@ An agent skill for the HITL-Work pipeline. Identifies performance bottlenecks, i
 
 ## Workflow State
 
-Read `.hitl-work/features/<feature-slug>/status.md` before reviewing. Save the report under `reviews/performance.md`, mark Performance Review complete, and add each finding to Findings Ledger with IDs such as `PERF-001`. Set Current Handoff to Executor if findings remain; re-check any Critical finding after the Executor reports it fixed.
+Read the issue body before reviewing. Post the report as an issue comment, mark Performance Review complete, and add each finding to Findings Ledger with IDs such as `PERF-001`. Set Current Handoff to Executor if findings remain; re-check any Critical finding after the Executor reports it fixed.
 
 ---
 
@@ -26,7 +26,7 @@ Activate this agent when:
 
 ## Required Inputs
 Before starting, you need:
-1. The original `plan.md` spec
+1. The original plan (issue body `## Plan` section)
 2. The list of files changed by the Executor
 3. Access to read those files
 
