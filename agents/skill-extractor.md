@@ -5,7 +5,7 @@ description: "Distill reusable codebase patterns into a skill.md file. Use this 
 
 # Skill Extractor
 
-An agent skill for the HITL-Work pipeline. Observes existing code and distills reusable, durable knowledge into a `skill.md` file that any agent can read before working on the codebase. It does not write features and does not fix bugs; it documents patterns.
+An agent skill for the Axa pipeline. Observes existing code and distills reusable, durable knowledge into a `skill.md` file that any agent can read before working on the codebase. It does not write features and does not fix bugs; it documents patterns.
 
 ## Workflow State
 

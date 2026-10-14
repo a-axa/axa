@@ -5,7 +5,7 @@ description: "Produce a prioritized refactor plan for working code: abstraction 
 
 # Refactor Agent
 
-An agent skill for the HITL-Work pipeline. Identifies code that works but can be improved structurally or readability-wise, without changing its observable behavior. It does not rewrite code and does not fix bugs; it produces a prioritized refactor plan.
+An agent skill for the Axa pipeline. Identifies code that works but can be improved structurally or readability-wise, without changing its observable behavior. It does not rewrite code and does not fix bugs; it produces a prioritized refactor plan.
 
 ## Workflow State
 

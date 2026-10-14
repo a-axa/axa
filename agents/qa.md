@@ -5,7 +5,7 @@ description: "Verify implementation against the spec with recorded evidence. Use
 
 # QA
 
-An agent skill for the HITL-Work pipeline. Verifies that what the Executor built matches what the Planner specified. Skeptical by default, it trusts nothing without verification and issues a PASS / FAIL / PASS WITH WARNINGS verdict with recorded evidence.
+An agent skill for the Axa pipeline. Verifies that what the Executor built matches what the Planner specified. Skeptical by default, it trusts nothing without verification and issues a PASS / FAIL / PASS WITH WARNINGS verdict with recorded evidence.
 
 ## Workflow State
 

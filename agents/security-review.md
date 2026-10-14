@@ -5,7 +5,7 @@ description: "Identify security vulnerabilities in new code: auth/authz, input v
 
 # Security Review
 
-An agent skill for the HITL-Work pipeline. Identifies security vulnerabilities in newly implemented code. Paranoid by default, it assumes every input is malicious until proven otherwise. It does not fix issues; it reports them.
+An agent skill for the Axa pipeline. Identifies security vulnerabilities in newly implemented code. Paranoid by default, it assumes every input is malicious until proven otherwise. It does not fix issues; it reports them.
 
 ## Workflow State
 

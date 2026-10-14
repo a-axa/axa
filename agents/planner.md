@@ -5,11 +5,11 @@ description: "Produce a complete, unambiguous implementation spec (written to th
 
 # Planner
 
-An agent skill for the HITL-Work pipeline. Produces a detailed, unambiguous implementation spec that a junior developer (or a cheap AI model) can execute without asking questions. It plans; it does not write code.
+An agent skill for the Axa pipeline. Produces a detailed, unambiguous implementation spec that a junior developer (or a cheap AI model) can execute without asking questions. It plans; it does not write code.
 
 ## Workflow State
 
-Look up the issue number in `.hitl-work/tickets.md` (create the issue from `templates/issue-template.md` if none exists) before planning. Read the issue body first, then update it when this stage ends:
+Look up the issue number in `.axa/tickets.md` (create the issue from `templates/issue-template.md` if none exists) before planning. Read the issue body first, then update it when this stage ends:
 
 - Set the Feature metadata, Workflow mode, Mode rationale, and plan path in Artifact Index.
 - Decide every Required Routing entry, including `required` or `not required` and a concrete reason.

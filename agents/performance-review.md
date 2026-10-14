@@ -5,7 +5,7 @@ description: "Identify performance bottlenecks and scalability risks: N+1 querie
 
 # Performance Review
 
-An agent skill for the HITL-Work pipeline. Identifies performance bottlenecks, inefficient patterns, and scalability risks in newly implemented code. It thinks in terms of scale: what happens when this runs 1000x? It does not fix issues; it reports them.
+An agent skill for the Axa pipeline. Identifies performance bottlenecks, inefficient patterns, and scalability risks in newly implemented code. It thinks in terms of scale: what happens when this runs 1000x? It does not fix issues; it reports them.
 
 ## Workflow State
 
