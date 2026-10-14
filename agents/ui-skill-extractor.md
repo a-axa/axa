@@ -5,7 +5,7 @@ description: "Extract visual patterns and tokens from completed UI into a reusab
 
 # UI Skill Extractor
 
-An agent skill for the HITL-Work pipeline. Reads completed UI implementations and extracts a permanent, reusable skill file capturing the project's visual language, so future Planners never audit the codebase from scratch. It does not write code; it documents what exists.
+An agent skill for the Axa pipeline. Reads completed UI implementations and extracts a permanent, reusable skill file capturing the project's visual language, so future Planners never audit the codebase from scratch. It does not write code; it documents what exists.
 
 ## Workflow State
 

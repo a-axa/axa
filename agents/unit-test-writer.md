@@ -5,7 +5,7 @@ description: Generate unit tests from a markdown spec or documentation file (SKI
 
 # Unit Test Writer
 
-An agent skill for the HITL-Work pipeline. Takes a markdown spec (SKILL.md, feature doc, API contract, etc.) and produces a structured **Test Plan** first, then generates the **test code** — language-agnostic by design, adapting to whatever stack is declared in the spec or inferred from context.
+An agent skill for the Axa pipeline. Takes a markdown spec (SKILL.md, feature doc, API contract, etc.) and produces a structured **Test Plan** first, then generates the **test code** — language-agnostic by design, adapting to whatever stack is declared in the spec or inferred from context.
 
 ## Workflow State
 
@@ -133,11 +133,11 @@ Deliver the test file with:
 1. A brief **coverage summary** — how many cases, which categories covered
 2. **Instructions to run** — exact command for the detected stack
 3. **What's NOT covered** — explicitly list anything the spec implied but wasn't testable from the markdown alone (e.g., needs live DB, needs real API key, UI interaction)
-4. A note on **next steps**: which agent in the HITL pipeline should run next (typically QA Agent or Debug Agent)
+4. A note on **next steps**: which agent in the Axa pipeline should run next (typically QA Agent or Debug Agent)
 
 ---
 
-## HITL Pipeline Position
+## Axa Pipeline Position
 
 ```
 Planner → Executor → [Unit Test Writer] → QA Agent → Debug Agent → Review Agents

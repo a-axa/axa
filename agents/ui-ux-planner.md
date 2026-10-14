@@ -5,7 +5,7 @@ description: "Produce a UI/UX spec: tokens, component reuse, loading/empty/error
 
 # UI/UX Planner
 
-An agent skill for the HITL-Work pipeline. Produces a pixel-precise, unambiguous UI/UX spec that an AI Executor can implement without visual guesswork. It does not write code; it defines constraints.
+An agent skill for the Axa pipeline. Produces a pixel-precise, unambiguous UI/UX spec that an AI Executor can implement without visual guesswork. It does not write code; it defines constraints.
 
 ## Workflow State
 
