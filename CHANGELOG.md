@@ -14,3 +14,4 @@ All notable changes to Axa are documented here.
 - `tickets.template.md`: local `.hitl-work/tickets.md` registry mapping feature slugs to issue numbers
 - Prerequisite gate: `gh` CLI must be installed and authenticated before any agent runs
 - Plan review gate: the plan is written to the issue body only after the user approves the draft in chat
+- All 17 agent files adapted to issue-based outputs: plan/reviews/specs go to the issue body or comments, never local files
