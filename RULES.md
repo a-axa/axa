@@ -86,11 +86,11 @@ HITL·Work wraps code in a lot of process. These values keep the code itself lea
 
 **Executor:** implement the minimum per spec, reuse-first. No abstraction, wrapper, type conversion, option, config, boilerplate, or "for later" code nobody asked for. Deletion beats addition. Bug fixes: grep every caller first, then fix the root cause once in the shared code. A deliberate shortcut gets a `shortcut: <the limit>, <when to upgrade>` comment.
 
-**QA:** add a cut-list to Phase 5 findings. Flag over-engineering (unasked abstractions, wrappers, boilerplate, speculative flexibility) as Warning findings. Never flag the never-cut list: validation at trust boundaries, error handling that prevents data loss, security, accessibility, anything the user explicitly asked for. Harvest `shortcut:` comments into TECH-DEBT.md entries.
+**QA:** add a cut-list to Phase 5 findings. Flag over-engineering (unasked abstractions, wrappers, boilerplate, speculative flexibility) as Warning findings. Never flag the never-cut list: validation at trust boundaries, error handling that prevents data loss, security, accessibility, anything the user explicitly asked for. Harvest `shortcut:` comments into the issue body `## Tech Debt` section.
 
 **Unit Test Writer:** already aligned. New non-trivial logic (a branch, a loop, a parser, money or security handling) leaves one small test; trivial changes need none.
 
-**Explicit non-goal:** leanness applies to shipped code only, never to HITL·Work process artifacts (`plan.md`, `status.md`, `qa-report.md`, `TECH-DEBT.md`, reviews). The paper trail stays complete; the code stays lean.
+**Explicit non-goal:** leanness applies to shipped code only, never to Axa process artifacts (issue body, comments). The paper trail stays complete; the code stays lean.
 
 ## Required Routing
 

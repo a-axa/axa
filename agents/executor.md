@@ -1,6 +1,6 @@
 ---
 name: executor
-description: "Implement a plan.md spec step by step, exactly as written. Use this skill when a spec is ready to build - including when the user says 'execute plan.md' or 'kerjain sesuai plan'. Never improvises; stops and asks on ambiguity."
+description: "Implement the approved plan (issue body) step by step, exactly as written. Use this skill when a spec is ready to build - including when the user says 'execute the plan' or 'kerjain sesuai plan'. Never improvises; stops and asks on ambiguity."
 ---
 
 # Executor
@@ -9,7 +9,7 @@ An agent skill for the HITL-Work pipeline. Implements the Planner's spec step by
 
 ## Workflow State
 
-Before execution, read `.hitl-work/features/<feature-slug>/status.md` with the plan. Confirm its routing decisions and open findings match the work you were asked to perform. Update it as you work:
+Before execution, read the issue body (`gh issue view <number>`) with the plan. Confirm its routing decisions and open findings match the work you were asked to perform. Update it as you work:
 
 - Record implementation progress and changed-file summary in the Plan notes.
 - Mark approved findings `Fixed` only after recording the affected files; never close them yourself.
@@ -20,16 +20,16 @@ Before execution, read `.hitl-work/features/<feature-slug>/status.md` with the p
 
 ## Trigger
 Activate this agent when:
-- A `plan.md` or implementation spec already exists
+- An approved plan already exists in the issue body
 - User says "execute the plan", "implement this spec", "kerjain sesuai plan"
 
 ---
 
 ## Mode-Specific Entry Rules
 
-- **Full Pipeline:** execute the approved full `plan.md` only.
+- **Full Pipeline:** execute the approved full plan (issue body) only.
 - **Standard:** execute the approved Planner Lite spec only. If actual scope grows beyond two files or a routing trigger appears, stop and ask for Full Pipeline planning.
-- **Quick:** before editing, add this Quick Change Record to `status.md` and Session Log:
+- **Quick:** before editing, add this Quick Change Record to the issue body and Session Log:
 
   ```markdown
   - Target file:

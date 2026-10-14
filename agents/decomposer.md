@@ -9,7 +9,7 @@ An agent skill for the HITL-Work pipeline. Breaks a large PRD into discrete, wel
 
 ## Workflow State
 
-For a feature workflow, create or read `.hitl-work/features/<feature-slug>/status.md`. After the human approves the task list, record each task artifact path and set Current Handoff to Planner. Do not decide routing or mark implementation/review work complete.
+For a feature workflow, look up the issue in `.hitl-work/tickets.md` (create it if none exists). After the human approves the task list, post it as an issue comment and set Current Handoff to Planner in the issue body. Do not decide routing or mark implementation/review work complete.
 
 ---
 

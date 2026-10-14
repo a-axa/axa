@@ -9,15 +9,15 @@ An agent skill for the HITL-Work pipeline. Adversarially reviews a spec to find 
 
 ## Workflow State
 
-Read `.hitl-work/features/<feature-slug>/status.md` with the plan. Save the review path in Artifact Index, update the Doubt Review status, and set Current Handoff to Planner for `BLOCKED` or `NEEDS CLARIFICATION`, otherwise to Executor. Add blockers requiring a human decision to Findings Ledger.
+Read the issue body with the plan. Save the review path in Artifact Index, update the Doubt Review status, and set Current Handoff to Planner for `BLOCKED` or `NEEDS CLARIFICATION`, otherwise to Executor. Add blockers requiring a human decision to Findings Ledger.
 
 ---
 
 ## Trigger
-Activate this agent manually after `planner` outputs a `plan.md`, before handing off to `executor`. Typical invocation:
+Activate this agent manually after the plan is approved in the issue body, before handing off to `executor`. Typical invocation:
 
 ```
-"doubt-review this spec: [paste plan.md content]"
+"doubt-review this spec: [paste plan content]"
 "jalanin doubt-review buat plan ini sebelum gue eksekusi"
 ```
 

@@ -9,7 +9,7 @@ An agent skill for the HITL-Work pipeline. Reviews database migrations before th
 
 ## Workflow State
 
-Read `.hitl-work/features/<feature-slug>/status.md` before reviewing. Save the report under `reviews/migration.md`, mark Migration Review complete, and add each finding to Findings Ledger with IDs such as `MIG-001`. Set Current Handoff to Planner or Executor according to the verdict; re-check any Critical finding after it is fixed.
+Read the issue body before reviewing. Post the report as an issue comment, mark Migration Review complete, and add each finding to Findings Ledger with IDs such as `MIG-001`. Set Current Handoff to Planner or Executor according to the verdict; re-check any Critical finding after it is fixed.
 
 ---
 
@@ -26,7 +26,7 @@ Activate this agent when:
 ## Required Inputs
 Before starting, you need:
 1. The migration file(s) to review
-2. The original `plan.md` spec
+2. The original plan (issue body `## Plan` section)
 3. Context on current production state (is this table live? how many rows?)
 
 If the production context is unknown → ask the user before proceeding. The size of the table changes everything.

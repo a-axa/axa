@@ -43,6 +43,10 @@ One concise row per stage or handoff (also posted as an issue comment). Decision
 |---|---|---|---|
 | YYYY-MM-DD | Planner | Plan drafted; waiting for approval. | chat |
 
+## Tech Debt
+
+Deferred items harvested by QA (Phase 6). Never overwritten — append only.
+
 ## Current Handoff
 - **Current stage:**
 - **Next responsible agent:**
