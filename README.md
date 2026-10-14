@@ -24,8 +24,8 @@ The 17 agent files are the same pipeline with one translation rule: wherever an 
 ## Quick start
 
 1. Install the skill: `npx skills add iskandar221201/axa`
-2. In your project: `mkdir -p .hitl-work && cp <skill>/tickets.template.md .hitl-work/tickets.md`
-3. Start a feature: the agent creates a GitHub issue from `issue-template.md`, records it in `tickets.md`, and runs the pipeline.
+2. In your project: `mkdir -p .hitl-work && cp <skill>/templates/tickets.template.md .hitl-work/tickets.md`
+3. Start a feature: the agent creates a GitHub issue from `templates/issue-template.md`, records it in `.hitl-work/tickets.md`, and runs the pipeline.
 4. Checkpoints happen in chat (primary) and as issue comments (async for teammates). The plan is written to the issue body only after you approve the draft in chat.
 
 ## Agents

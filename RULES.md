@@ -16,7 +16,7 @@ Agent files were written for HITL·Work's local files. In Axa, translate every r
 
 ## Issue State & Artifacts
 
-For each non-trivial feature, create one GitHub issue and record `slug -> issue number` in `.hitl-work/tickets.md`. The issue body is the live state: copy `issue-template.md` into it at creation. Every agent must read the issue body before acting (`gh issue view <number>`) and update only the fields belonging to its role before handoff. Keep the plan, routing decisions, findings ledger, verification evidence, and session log current at every handoff.
+For each non-trivial feature, create one GitHub issue and record `slug -> issue number` in `.hitl-work/tickets.md`. The issue body is the live state: copy `templates/issue-template.md` into it at creation. Every agent must read the issue body before acting (`gh issue view <number>`) and update only the fields belonging to its role before handoff. Keep the plan, routing decisions, findings ledger, verification evidence, and session log current at every handoff.
 
 - **Issue body** = plan + live status (updated in place via `gh issue edit`)
 - **Issue comments** = handoff log and reports (each stage posts one summary comment: what was done, key decisions, what is next)
@@ -42,29 +42,29 @@ HITL·Work pairs well with [anti-slop](https://github.com/miqdadbadjuber/anti-sl
    - `no` → record `antislop: declined` in `.hitl-work/preferences.md`; continue without it.
    - `never ask again` → record in `~/.hitl-work/preferences.md`; never run this gate again on any project.
    Only after the answer is recorded may the pipeline continue.
-3. **Combine only when present.** When the anti-slop skill is available (pre-installed or just installed), the Planner, QA, and Documentation agents must read its core rules. The Planner applies them while writing `plan.md` (see the Anti-slop hard rules in `planner.md`); QA and Documentation add an explicit slop check to their verdicts: reject generic AI-pattern code, copy, and UI. Note: `npx skills add` copies the skill folders but does not write a session auto-load pointer; HITL·Work agents load the anti-slop rules explicitly, so no pointer is needed.
+3. **Combine only when present.** When the anti-slop skill is available (pre-installed or just installed), the Planner, QA, and Documentation agents must read its core rules. The Planner applies them while writing `plan.md` (see the Anti-slop hard rules in `agents/planner.md`); QA and Documentation add an explicit slop check to their verdicts: reject generic AI-pattern code, copy, and UI. Note: `npx skills add` copies the skill folders but does not write a session auto-load pointer; HITL·Work agents load the anti-slop rules explicitly, so no pointer is needed.
 
 ## Agents
 
 | Agent | File | When |
 |-------|------|------|
-| Decomposer | `decomposer.md` | PRD too large for one spec |
-| Planner | `planner.md` | No spec yet |
-| Doubt Review | `doubt-review.md` | After Planner, before Executor — risky/multi-tenant/DB changes |
-| Executor | `executor.md` | `plan.md` exists |
-| Unit Test Writer | `unit-test-writer.md` | After Executor — test plan + code from markdown spec |
-| QA | `qa.md` | After Executor reports done |
-| Architecture Review | `architecture-review.md` | Layer boundaries, duplication |
-| Security Review | `security-review.md` | New endpoints, auth, input handling |
-| Performance Review | `performance-review.md` | N+1, indexing, caching |
-| Migration Review | `migration-review.md` | Any DB migration |
-| Refactor Agent | `refactor-agent.md` | Code works but needs cleanup |
-| API Agent | `api-agent.md` | DESIGN / INTEGRATION / AUDIT |
-| Debug Agent | `debug.md` | Root-cause investigation (no fixes) |
-| Documentation | `documentation.md` | After QA passes |
-| Skill Extractor | `skill-extractor.md` | After QA, distill patterns |
-| UI/UX Planner | `ui-ux-planner.md` | When Planner delegates UI |
-| UI Skill Extractor | `ui-skill-extractor.md` | After QA, extract visual tokens |
+| Decomposer | `agents/decomposer.md` | PRD too large for one spec |
+| Planner | `agents/planner.md` | No spec yet |
+| Doubt Review | `agents/doubt-review.md` | After Planner, before Executor — risky/multi-tenant/DB changes |
+| Executor | `agents/executor.md` | `plan.md` exists |
+| Unit Test Writer | `agents/unit-test-writer.md` | After Executor — test plan + code from markdown spec |
+| QA | `agents/qa.md` | After Executor reports done |
+| Architecture Review | `agents/architecture-review.md` | Layer boundaries, duplication |
+| Security Review | `agents/security-review.md` | New endpoints, auth, input handling |
+| Performance Review | `agents/performance-review.md` | N+1, indexing, caching |
+| Migration Review | `agents/migration-review.md` | Any DB migration |
+| Refactor Agent | `agents/refactor-agent.md` | Code works but needs cleanup |
+| API Agent | `agents/api-agent.md` | DESIGN / INTEGRATION / AUDIT |
+| Debug Agent | `agents/debug.md` | Root-cause investigation (no fixes) |
+| Documentation | `agents/documentation.md` | After QA passes |
+| Skill Extractor | `agents/skill-extractor.md` | After QA, distill patterns |
+| UI/UX Planner | `agents/ui-ux-planner.md` | When Planner delegates UI |
+| UI Skill Extractor | `agents/ui-skill-extractor.md` | After QA, extract visual tokens |
 
 ## Workflow Modes
 
@@ -147,11 +147,11 @@ If your context was compacted, the session restarted, or you are picking up exis
 ## Workflow
 
 1. **Select mode** — STOP and ask the user to choose explicitly (Full / Standard / Quick), presenting your recommendation. Validate the choice against the eligibility rules; refuse unsafe picks with an explanation. Record the mode and reason in the issue body.
-2. **Decompose** *(Full only, optional)* — `decomposer.md`. Output the task list as an issue comment. Stop for review.
-3. **Plan** — Full: `planner.md` full spec. Standard: Planner Lite spec. Quick: Quick Change Record only. Show the plan in chat; write it to the issue body only after the user's explicit approval.
-4. **Doubt Review** *(required by routing; otherwise Full only when risk warrants it)* — `doubt-review.md`. Verdict: READY / BLOCKED / NEEDS CLARIFICATION.
-5. **Execute** — `executor.md`. One step at a time. Stop and escalate if scope exceeds the selected mode.
-6. **Unit Test Writer** *(required by routing; otherwise optional)* — `unit-test-writer.md`. Test Plan -> approval -> Test Code.
+2. **Decompose** *(Full only, optional)* — `agents/decomposer.md`. Output the task list as an issue comment. Stop for review.
+3. **Plan** — Full: `agents/planner.md` full spec. Standard: Planner Lite spec. Quick: Quick Change Record only. Show the plan in chat; write it to the issue body only after the user's explicit approval.
+4. **Doubt Review** *(required by routing; otherwise Full only when risk warrants it)* — `agents/doubt-review.md`. Verdict: READY / BLOCKED / NEEDS CLARIFICATION.
+5. **Execute** — `agents/executor.md`. One step at a time. Stop and escalate if scope exceeds the selected mode.
+6. **Unit Test Writer** *(required by routing; otherwise optional)* — `agents/unit-test-writer.md`. Test Plan -> approval -> Test Code.
 7. **QA** — Full/Standard: full QA. Quick: minimal QA. All modes require a clear PASS / FAIL / PASS WITH WARNINGS verdict and recorded evidence.
 8. **Specialist Reviews** *(required by the routing table; otherwise as needed, parallel ok)* — findings by severity -> Executor -> re-verification.
 9. **Docs & Skill Extraction** — Full when applicable; Standard/Quick only when the change establishes a reusable or user-facing behavior, after all blocking findings are closed.
