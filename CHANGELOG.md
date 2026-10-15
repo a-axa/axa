@@ -2,9 +2,7 @@
 
 All notable changes to Axa are documented here.
 
-## [Unreleased]
-
-## [0.1.0] - 2026-10-15
+## [1.0.0] - 2026-10-15
 
 ### Added
 - Initial release: 17-agent human-in-the-loop pipeline with GitHub issues as the state backend
