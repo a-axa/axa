@@ -19,7 +19,7 @@ Axa keeps the speed. It adds structure. 17 agents, one job each. The workflow st
 ### Terminal
 
 ```bash
-npx skills add iskandar221201/axa
+npx skills add a-axa/axa
 ```
 
 That's it. Axa sets up `.axa/` on first run.
@@ -29,7 +29,7 @@ That's it. Axa sets up `.axa/` on first run.
 If you prefer not to use the terminal, copy this and paste it into your AI agent:
 
 ```
-Load the Axa skill from https://github.com/iskandar221201/axa and start a new feature.
+Load the Axa skill from https://github.com/a-axa/axa and start a new feature.
 Ask me which workflow mode to use (Full / Standard / Quick), then create a GitHub issue
 and run the pipeline from there.
 ```
@@ -63,7 +63,7 @@ Axa teaches how to build. [ponytail](https://github.com/dietrichgebert/ponytail)
 
 Axa adds process. Every feature gets a GitHub issue, a plan, a QA report, and a findings ledger. That overhead is worth it when you need audit trails, async team visibility, or a ticket-driven workflow. It's not worth it for a quick one-liner fix — use Quick mode or skip Axa entirely.
 
-If you want the same pipeline without GitHub Issues, see [HITL·Work](https://github.com/iskandar221201/hitl-work) — same agents, local files.
+If you want the same pipeline without GitHub Issues, see [HITL·Work](https://github.com/a-axa/hitl-work) — same agents, local files.
 
 ## License
 
