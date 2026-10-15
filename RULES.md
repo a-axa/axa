@@ -5,7 +5,9 @@ Detail rules behind `SKILL.md` (the index). The workflow state lives in a GitHub
 ## Prerequisites
 
 - `gh` CLI installed and authenticated (`gh auth status`). STOP if it is not: ask the user to set it up before any agent runs.
+- Minimum `gh` CLI version: **2.40.0** (`gh --version`). Earlier versions have GraphQL issues with `gh issue view`. If older: ask the user to update before continuing.
 - The repository must be a GitHub repo (`gh` resolves the current repo). Axa does not work outside GitHub.
+- Use `gh issue view <number> --json body,comments,labels` instead of plain `gh issue view` to avoid GraphQL deprecation errors from Projects (classic).
 
 ## First Run Setup
 
@@ -33,7 +35,7 @@ Only after `.axa/` is confirmed to exist may the pipeline continue.
 
 ## Issue State & Artifacts
 
-For each non-trivial feature, create one GitHub issue and record `slug -> issue number` in `.axa/tickets.md`. The issue body is the live state: copy `templates/issue-template.md` into it at creation. Every agent must read the issue body before acting (`gh issue view <number>`) and update only the fields belonging to its role before handoff. Keep the plan, routing decisions, findings ledger, verification evidence, and session log current at every handoff.
+For each non-trivial feature, create one GitHub issue and record `slug -> issue number` in `.axa/tickets.md`. The issue body is the live state: copy `templates/issue-template.md` into it at creation. Every agent must read the issue body before acting (`gh issue view <number> --json body,comments,labels`) and update only the fields belonging to its role before handoff. Keep the plan, routing decisions, findings ledger, verification evidence, and session log current at every handoff.
 
 - **Issue body** = plan + live status (updated in place via `gh issue edit`)
 - **Issue comments** = handoff log and reports (each stage posts one summary comment: what was done, key decisions, what is next)
@@ -85,21 +87,24 @@ Axa pairs well with [anti-slop](https://github.com/miqdadbadjuber/anti-slop), a 
 
 ## Workflow Modes
 
-The user explicitly chooses the mode. Before any agent runs: STOP, present all three modes below with your recommendation (the lowest safe mode per the eligibility rules), and wait for the user's choice. Do not proceed until the user has chosen. If the chosen mode violates the eligibility rules, refuse with a concrete explanation and ask again. Record the chosen mode in `status.md`. In non-interactive runs where the user cannot be reached, use the lowest safe mode and record that the choice was automatic. Any risk signal escalates the work immediately; never use Quick mode to bypass a required review.
+The user explicitly chooses the mode. Before any agent runs: STOP, present all four modes below with your recommendation (the lowest safe mode per the eligibility rules), and wait for the user's choice. Do not proceed until the user has chosen. If the chosen mode violates the eligibility rules, refuse with a concrete explanation and ask again. Record the chosen mode in the issue body. In non-interactive runs where the user cannot be reached, use the lowest safe mode and record that the choice was automatic. Any risk signal escalates the work immediately; never use Quick mode to bypass a required review.
 
 | Mode | Use for | Required path | Not allowed when |
 |---|---|---|---|
 | 🔴 **Full Pipeline** | New feature, multi-module work, migration, security-sensitive change, external integration, unclear/high blast radius | Decomposer when scope needs splitting → full Planner → required reviews → Executor → tests when applicable → QA → docs/skill extraction as applicable | Never downgrade merely to save time |
+| 🟠 **Standard+** | Multi-file low-risk change: 3–6 files, no security/DB/auth/logic surface, pattern already established in the codebase (e.g. applying an existing design system across views) | Planner Lite → Executor → QA; Architecture Review only when structural (not visual); UI/UX Planner in lite mode when pattern is established | Migration, auth/authz, external API, business logic, DB queries, unclear root cause, or new patterns not yet established in the codebase |
 | 🟡 **Standard** | Scoped bug fix or enhancement, understood root cause, normally 1–2 files and no high-risk surface | Planner Lite → Executor → QA; add only reviews triggered by routing | Migration, auth/authz, external API, user-controlled input, cross-module change, unclear root cause, or more than 2 expected files |
 | 🟢 **Quick** | Typo, comment, documentation-only correction, known-safe config value, or isolated hotfix with an obvious one-file fix | Executor with Quick Change Record → minimal QA | Migration, secrets, auth/authz, security surface, external API, user input, dependency, public API/contract, database query, unclear root cause, or more than 1 expected file |
 
 **Quick Change Record** must state: target file, exact intended change, expected behavior, rollback method, and why the change is eligible for Quick mode. Executor stops and escalates to Standard or Full if the actual code contradicts that record.
 
+**Standard+ UI/UX Planner (lite mode):** when `pattern: established` is recorded in the issue body (the design system tokens, components, and states are already documented and applied on at least one other screen), the UI/UX Planner skips token sheet, full wireframe, and interaction spec. It produces only: which existing components to reuse, which states apply (populated/empty — skip loading/error for server-rendered pages), and copy/microcopy if it differs from existing screens. Full UI/UX spec is still required when introducing a new pattern, a new component, or a new interaction.
+
 ## Lean Code Discipline
 
 Axa wraps code in a lot of process. These values keep the code itself lean. They were adapted from an audit of ponytail (https://github.com/DietrichGebert/ponytail, MIT). No external skill is required: the values below are native Axa rules.
 
-**Planner:** before writing the spec, run the minimality ladder for every planned piece of new code. Rungs: 1. does it need to exist, 2. already in this codebase, 3. standard library or platform feature, 4. installed dependency (never add one for a few lines), 5. one line a reader gets at a glance, 6. otherwise the minimum that works. Record the justifying rung (or the existing code reused) per spec item. This replaces the checkbox-style YAGNI check with per-item justification. Full Pipeline uses the full ladder; Standard keeps the YAGNI check without per-item records; Quick is trivially minimal by definition.
+**Planner:** before writing the spec, run the minimality ladder for every planned piece of new code. Rungs: 1. does it need to exist, 2. already in this codebase, 3. standard library or platform feature, 4. installed dependency (never add one for a few lines), 5. one line a reader gets at a glance, 6. otherwise the minimum that works. Record the justifying rung (or the existing code reused) per spec item. Full Pipeline uses the full ladder; Standard+ and Standard keep the YAGNI check without per-item records; Quick is trivially minimal by definition.
 
 **Executor:** implement the minimum per spec, reuse-first. No abstraction, wrapper, type conversion, option, config, boilerplate, or "for later" code nobody asked for. Deletion beats addition. Bug fixes: grep every caller first, then fix the root cause once in the shared code. A deliberate shortcut gets a `shortcut: <the limit>, <when to upgrade>` comment.
 
@@ -116,16 +121,18 @@ Axa wraps code in a lot of process. These values keep the code itself lean. They
 | New endpoint, auth/authz, webhook, user-controlled input, external API | Security Review |
 | Schema change, index, backfill, or data migration | Doubt Review + Migration Review |
 | New query, bulk operation, caching, queue/job, or high-traffic endpoint | Performance Review |
-| Cross-module change, new architectural pattern, or substantial refactor | Architecture Review |
-| New screen, critical UI flow, reusable UI component, or substantial redesign | UI/UX Planner; UI Skill Extractor after QA |
+| Cross-module **architectural** change (layer boundaries, dependency direction, new patterns) | Architecture Review |
+| Cross-module **visual** change (CSS tokens, design system classes, view partials only) | UI/UX Planner only — not Architecture Review |
+| New screen, critical UI flow, reusable UI component, or new pattern | UI/UX Planner (full); UI Skill Extractor after QA |
+| Established-pattern redesign (applying existing design system to additional screens) | UI/UX Planner (lite mode); UI Skill Extractor only if new tokens/components were introduced |
 | Non-trivial business logic | Unit Test Writer, including approved Test Plan |
 | Bug with unknown root cause | Debug Agent before planning a fix |
 
-A required stage may be skipped only when `status.md` records the reason and the human accepts the risk.
+A required stage may be skipped only when the issue body records the reason and the human accepts the risk.
 
 ## Re-verification Loop
 
-1. QA or specialist findings receive IDs (`QA-001`, `SEC-001`, `PERF-001`, and so on) in `status.md`.
+1. QA or specialist findings receive IDs (`QA-001`, `SEC-001`, `PERF-001`, and so on) in the issue body.
 2. Executor fixes only approved findings and marks them `Fixed` with the changed files.
 3. QA verifies the regression after every fix. The specialist who reported a Critical finding re-checks it before closure.
 4. A finding is closed only as `Fixed`, `Accepted risk` (human decision recorded), or `Deferred` (owner and follow-up recorded).
@@ -135,16 +142,16 @@ A required stage may be skipped only when `status.md` records the reason and the
 When two specialist reviews contradict each other (for example Security requires X while Performance requires Y):
 
 1. Do not let the Executor pick a side on its own.
-2. Record both findings in `status.md` with status `Open` and note the conflict explicitly.
+2. Record both findings in the issue body with status `Open` and note the conflict explicitly.
 3. STOP and present the trade-off to the human. The human arbitrates.
-4. Record the decision and its rationale in `status.md`. Only then may the Executor proceed.
+4. Record the decision and its rationale in the issue body. Only then may the Executor proceed.
 
 ## Session Recovery
 
 If your context was compacted, the session restarted, or you are picking up existing work:
 
 1. Find the feature state: look up the slug in `.axa/tickets.md` to get the issue number. If several features exist, continue the most recently updated one, or ask the user which one.
-2. Read the issue body and recent comments in full (`gh issue view <number> --comments`). Trust them over your memory of this conversation.
+2. Read the issue body and recent comments in full (`gh issue view <number> --json body,comments,labels`). Trust them over your memory of this conversation.
 3. Continue from the **Current Handoff** field in the issue body. Do not re-run stages already marked complete.
 4. If no ticket exists for the requested work, start the pipeline normally (create the issue first).
 
@@ -152,7 +159,7 @@ If your context was compacted, the session restarted, or you are picking up exis
 
 1. **Read the agent file before acting.** Never summarize from memory.
 2. **Follow each agent's process exactly.** Boundaries are intentional.
-3. **Respect the selected mode.** Full Pipeline requires Planner and QA; Standard requires Planner Lite and QA; Quick may skip Planner only with a recorded Quick Change Record and minimal QA. Don't skip QA to ship.
+3. **Respect the selected mode.** Full Pipeline requires Planner and QA; Standard+ and Standard require Planner Lite and QA; Quick may skip Planner only with a recorded Quick Change Record and minimal QA. Don't skip QA to ship.
 4. **Checkpoints (two channels):**
    - Chat (primary): stop and wait for the user's approval in the harness.
    - Issue (async): at every checkpoint also post a comment (`gh issue comment`) summarizing what needs approval. A teammate may approve via issue reply or reaction.
@@ -164,15 +171,15 @@ If your context was compacted, the session restarted, or you are picking up exis
 ## Workflow
 
 1. **Setup** — confirm `.axa/` exists and `tickets.md` is present. If not, create them per First Run Setup above. Then run the anti-slop gate.
-2. **Select mode** — STOP and ask the user to choose explicitly (Full / Standard / Quick), presenting your recommendation. Validate the choice against the eligibility rules; refuse unsafe picks with an explanation. Record the mode and reason in the issue body.
+2. **Select mode** — STOP and ask the user to choose explicitly (Full / Standard+ / Standard / Quick), presenting your recommendation. Validate the choice against the eligibility rules; refuse unsafe picks with an explanation. Record the mode and reason in the issue body.
 3. **Decompose** *(Full only, optional)* — `agents/decomposer.md`. Output the task list as an issue comment. Stop for review.
-4. **Plan** — Full: `agents/planner.md` full spec. Standard: Planner Lite spec. Quick: Quick Change Record only. Show the plan in chat; write it to the issue body only after the user's explicit approval.
+4. **Plan** — Full: `agents/planner.md` full spec. Standard+/Standard: Planner Lite spec. Quick: Quick Change Record only. Show the plan in chat; write it to the issue body only after the user's explicit approval.
 5. **Doubt Review** *(required by routing; otherwise Full only when risk warrants it)* — `agents/doubt-review.md`. Verdict: READY / BLOCKED / NEEDS CLARIFICATION.
 6. **Execute** — `agents/executor.md`. One step at a time. Stop and escalate if scope exceeds the selected mode.
 7. **Unit Test Writer** *(required by routing; otherwise optional)* — `agents/unit-test-writer.md`. Test Plan -> approval -> Test Code.
-8. **QA** — Full/Standard: full QA. Quick: minimal QA. All modes require a clear PASS / FAIL / PASS WITH WARNINGS verdict and recorded evidence.
+8. **QA** — Full/Standard+/Standard: full QA. Quick: minimal QA. All modes require a clear PASS / FAIL / PASS WITH WARNINGS verdict and recorded evidence.
 9. **Specialist Reviews** *(required by the routing table; otherwise as needed, parallel ok)* — findings by severity -> Executor -> re-verification.
-10. **Docs & Skill Extraction** — Full when applicable; Standard/Quick only when the change establishes a reusable or user-facing behavior, after all blocking findings are closed.
+10. **Docs & Skill Extraction** — Full when applicable; Standard+/Standard/Quick only when the change establishes a reusable or user-facing behavior, after all blocking findings are closed.
 
 ## Rules
 
@@ -181,3 +188,4 @@ If your context was compacted, the session restarted, or you are picking up exis
 - Every spec must include "What NOT to Touch" and "Breaking Changes".
 - Executor stops and asks on ambiguity — never improvises.
 - Unit Test Writer never skips Test Plan approval.
+- Standard+ is not a shortcut around security or logic reviews — it only relaxes process checks for pure visual/structural changes with established patterns.
