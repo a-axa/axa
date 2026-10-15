@@ -7,6 +7,30 @@ Detail rules behind `SKILL.md` (the index). The workflow state lives in a GitHub
 - `gh` CLI installed and authenticated (`gh auth status`). STOP if it is not: ask the user to set it up before any agent runs.
 - The repository must be a GitHub repo (`gh` resolves the current repo). Axa does not work outside GitHub.
 
+## First Run Setup
+
+Before any agent runs, check whether `.axa/` exists in the project root:
+
+```
+if .axa/ does not exist:
+  mkdir -p .axa
+  cp <skill-root>/templates/tickets.template.md .axa/tickets.md
+  touch .axa/preferences.md
+```
+
+`<skill-root>` is wherever `npx skills` installed Axa — check `.claude/skills/axa/`, `.agents/skills/axa/`, `~/.claude/skills/axa/`, or `~/.agents/skills/axa/`. Use the first match found.
+
+If `tickets.md` already exists, do not overwrite it. If the template cannot be found, create `.axa/tickets.md` with this content:
+
+```markdown
+# Axa Ticket Registry
+
+slug -> issue number
+
+```
+
+Only after `.axa/` is confirmed to exist may the pipeline continue.
+
 ## Issue State & Artifacts
 
 For each non-trivial feature, create one GitHub issue and record `slug -> issue number` in `.axa/tickets.md`. The issue body is the live state: copy `templates/issue-template.md` into it at creation. Every agent must read the issue body before acting (`gh issue view <number>`) and update only the fields belonging to its role before handoff. Keep the plan, routing decisions, findings ledger, verification evidence, and session log current at every handoff.
@@ -139,15 +163,16 @@ If your context was compacted, the session restarted, or you are picking up exis
 
 ## Workflow
 
-1. **Select mode** — STOP and ask the user to choose explicitly (Full / Standard / Quick), presenting your recommendation. Validate the choice against the eligibility rules; refuse unsafe picks with an explanation. Record the mode and reason in the issue body.
-2. **Decompose** *(Full only, optional)* — `agents/decomposer.md`. Output the task list as an issue comment. Stop for review.
-3. **Plan** — Full: `agents/planner.md` full spec. Standard: Planner Lite spec. Quick: Quick Change Record only. Show the plan in chat; write it to the issue body only after the user's explicit approval.
-4. **Doubt Review** *(required by routing; otherwise Full only when risk warrants it)* — `agents/doubt-review.md`. Verdict: READY / BLOCKED / NEEDS CLARIFICATION.
-5. **Execute** — `agents/executor.md`. One step at a time. Stop and escalate if scope exceeds the selected mode.
-6. **Unit Test Writer** *(required by routing; otherwise optional)* — `agents/unit-test-writer.md`. Test Plan -> approval -> Test Code.
-7. **QA** — Full/Standard: full QA. Quick: minimal QA. All modes require a clear PASS / FAIL / PASS WITH WARNINGS verdict and recorded evidence.
-8. **Specialist Reviews** *(required by the routing table; otherwise as needed, parallel ok)* — findings by severity -> Executor -> re-verification.
-9. **Docs & Skill Extraction** — Full when applicable; Standard/Quick only when the change establishes a reusable or user-facing behavior, after all blocking findings are closed.
+1. **Setup** — confirm `.axa/` exists and `tickets.md` is present. If not, create them per First Run Setup above. Then run the anti-slop gate.
+2. **Select mode** — STOP and ask the user to choose explicitly (Full / Standard / Quick), presenting your recommendation. Validate the choice against the eligibility rules; refuse unsafe picks with an explanation. Record the mode and reason in the issue body.
+3. **Decompose** *(Full only, optional)* — `agents/decomposer.md`. Output the task list as an issue comment. Stop for review.
+4. **Plan** — Full: `agents/planner.md` full spec. Standard: Planner Lite spec. Quick: Quick Change Record only. Show the plan in chat; write it to the issue body only after the user's explicit approval.
+5. **Doubt Review** *(required by routing; otherwise Full only when risk warrants it)* — `agents/doubt-review.md`. Verdict: READY / BLOCKED / NEEDS CLARIFICATION.
+6. **Execute** — `agents/executor.md`. One step at a time. Stop and escalate if scope exceeds the selected mode.
+7. **Unit Test Writer** *(required by routing; otherwise optional)* — `agents/unit-test-writer.md`. Test Plan -> approval -> Test Code.
+8. **QA** — Full/Standard: full QA. Quick: minimal QA. All modes require a clear PASS / FAIL / PASS WITH WARNINGS verdict and recorded evidence.
+9. **Specialist Reviews** *(required by the routing table; otherwise as needed, parallel ok)* — findings by severity -> Executor -> re-verification.
+10. **Docs & Skill Extraction** — Full when applicable; Standard/Quick only when the change establishes a reusable or user-facing behavior, after all blocking findings are closed.
 
 ## Rules
 
