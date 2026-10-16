@@ -33,6 +33,53 @@ slug -> issue number
 
 Only after `.axa/` is confirmed to exist may the pipeline continue.
 
+## Project Preferences Learning
+
+`.axa/preferences.md` is a living document that grows with the project. Every agent may append to it when a pipeline decision reveals a project preference — a pattern chosen, a risk accepted, an approach ruled out, a mistake corrected. It is read by all agents before acting so past decisions are not repeated.
+
+**Never overwrite — append only. One entry per decision, short and specific.**
+
+### When to write
+
+| Agent | Write when |
+|-------|-----------|
+| Planner | Spec approved with a non-obvious decision — pattern chosen over another, approach explicitly ruled out |
+| Doubt Review | Warning accepted — record what risk was knowingly taken and why |
+| Executor | Step revised from spec — record what the user preferred instead |
+| Unit Test Writer | Test approach decided for this project (e.g. RefreshDatabase over pure mocks) |
+| QA | Finding accepted or rejected — record the preference it reveals |
+| Specialist Reviews | Pattern flagged as avoid or approved for this codebase |
+| UI/UX Planner | Visual decision that should propagate to future screens |
+
+### Format
+
+```markdown
+## YYYY-MM-DD · [Agent] — [short title]
+[One line: what was decided and why.]
+```
+
+### Examples
+
+```markdown
+## 2026-10-15 · Architecture Review — prefer two middleware classes over one parameterized
+Two separate classes (EnsureUserIsSuperAdmin, EnsureUserIsAdmin) are clearer than one
+parameterized middleware. Do not consolidate unless roles multiply beyond 3.
+
+## 2026-10-15 · Doubt Review — global email uniqueness accepted for MVP
+Two tenants cannot share an email address. Accepted: target use case makes collision
+unlikely. Revisit if multi-org self-signup is added.
+
+## 2026-10-15 · QA — border-right on active nav is AI slop
+Removed border-right: 2px solid and shadow-sm from active nav state. Active state is
+teal-dark text + teal-soft background + font-weight 600. No decoration.
+```
+
+### What NOT to write
+- Decisions obvious from the spec or skill file
+- Temporary workarounds that will be removed next sprint
+- Anything already captured in a codebase skill file
+- Duplicate of an existing entry — check before appending
+
 ## Issue State & Artifacts
 
 For each non-trivial feature, create one GitHub issue and record `slug -> issue number` in `.axa/tickets.md`. The issue body is the live state: copy `templates/issue-template.md` into it at creation. Every agent must read the issue body before acting (`gh issue view <number> --json body,comments,labels`) and update only the fields belonging to its role before handoff. Keep the plan, routing decisions, findings ledger, verification evidence, and session log current at every handoff.
@@ -40,7 +87,7 @@ For each non-trivial feature, create one GitHub issue and record `slug -> issue 
 - **Issue body** = plan + live status (updated in place via `gh issue edit`)
 - **Issue comments** = handoff log and reports (each stage posts one summary comment: what was done, key decisions, what is next)
 - **Labels** = pipeline stage: `axa:planning`, `axa:executing`, `axa:qa`, `axa:review`, `axa:done`
-- **Local files** = only `.axa/preferences.md` (anti-slop etc.) and `.axa/tickets.md` (slug -> issue number registry)
+- **Local files** = only `.axa/preferences.md` (project preferences) and `.axa/tickets.md` (slug -> issue number registry)
 
 **Start where:**
 - Large PRD -> **Decomposer** (task list posted as an issue comment)
@@ -158,34 +205,38 @@ If your context was compacted, the session restarted, or you are picking up exis
 ## Instructions
 
 1. **Read the agent file before acting.** Never summarize from memory.
-2. **Follow each agent's process exactly.** Boundaries are intentional.
-3. **Respect the selected mode.** Full Pipeline requires Planner and QA; Standard+ and Standard require Planner Lite and QA; Quick may skip Planner only with a recorded Quick Change Record and minimal QA. Don't skip QA to ship.
-4. **Checkpoints (two channels):**
+2. **Read `.axa/preferences.md` before acting.** Apply recorded project preferences — do not repeat decisions already made.
+3. **Follow each agent's process exactly.** Boundaries are intentional.
+4. **Respect the selected mode.** Full Pipeline requires Planner and QA; Standard+ and Standard require Planner Lite and QA; Quick may skip Planner only with a recorded Quick Change Record and minimal QA. Don't skip QA to ship.
+5. **Checkpoints (two channels):**
    - Chat (primary): stop and wait for the user's approval in the harness.
    - Issue (async): at every checkpoint also post a comment (`gh issue comment`) summarizing what needs approval. A teammate may approve via issue reply or reaction.
    - Either channel unblocks; record which channel approved and by whom.
    - After Decomposer -> human reviews task list. After Planner -> optionally run Doubt Review. After Executor -> optionally run Unit Test Writer (recommended for non-trivial logic). After Unit Test Writer -> QA uses generated tests as baseline. QA FAIL -> return to Executor.
-5. **Specialist reviews report only** — findings go back to Executor to fix.
-6. **Close the loop** with Docs + Skill Extractor after QA passes.
+6. **Specialist reviews report only** — findings go back to Executor to fix.
+7. **Close the loop** with Docs + Skill Extractor after QA passes.
 
 ## Workflow
 
 1. **Setup** — confirm `.axa/` exists and `tickets.md` is present. If not, create them per First Run Setup above. Then run the anti-slop gate.
-2. **Select mode** — STOP and ask the user to choose explicitly (Full / Standard+ / Standard / Quick), presenting your recommendation. Validate the choice against the eligibility rules; refuse unsafe picks with an explanation. Record the mode and reason in the issue body.
-3. **Decompose** *(Full only, optional)* — `agents/decomposer.md`. Output the task list as an issue comment. Stop for review.
-4. **Plan** — Full: `agents/planner.md` full spec. Standard+/Standard: Planner Lite spec. Quick: Quick Change Record only. Show the plan in chat; write it to the issue body only after the user's explicit approval.
-5. **Doubt Review** *(required by routing; otherwise Full only when risk warrants it)* — `agents/doubt-review.md`. Verdict: READY / BLOCKED / NEEDS CLARIFICATION.
-6. **Execute** — `agents/executor.md`. One step at a time. Stop and escalate if scope exceeds the selected mode.
-7. **Unit Test Writer** *(required by routing; otherwise optional)* — `agents/unit-test-writer.md`. Test Plan -> approval -> Test Code.
-8. **QA** — Full/Standard+/Standard: full QA. Quick: minimal QA. All modes require a clear PASS / FAIL / PASS WITH WARNINGS verdict and recorded evidence.
-9. **Specialist Reviews** *(required by the routing table; otherwise as needed, parallel ok)* — findings by severity -> Executor -> re-verification.
-10. **Docs & Skill Extraction** — Full when applicable; Standard+/Standard/Quick only when the change establishes a reusable or user-facing behavior, after all blocking findings are closed.
+2. **Read preferences** — read `.axa/preferences.md` in full. Apply all recorded project preferences before any planning or execution.
+3. **Select mode** — STOP and ask the user to choose explicitly (Full / Standard+ / Standard / Quick), presenting your recommendation. Validate the choice against the eligibility rules; refuse unsafe picks with an explanation. Record the mode and reason in the issue body.
+4. **Decompose** *(Full only, optional)* — `agents/decomposer.md`. Output the task list as an issue comment. Stop for review.
+5. **Plan** — Full: `agents/planner.md` full spec. Standard+/Standard: Planner Lite spec. Quick: Quick Change Record only. Show the plan in chat; write it to the issue body only after the user's explicit approval.
+6. **Doubt Review** *(required by routing; otherwise Full only when risk warrants it)* — `agents/doubt-review.md`. Verdict: READY / BLOCKED / NEEDS CLARIFICATION.
+7. **Execute** — `agents/executor.md`. One step at a time. Stop and escalate if scope exceeds the selected mode.
+8. **Unit Test Writer** *(required by routing; otherwise optional)* — `agents/unit-test-writer.md`. Test Plan -> approval -> Test Code.
+9. **QA** — Full/Standard+/Standard: full QA. Quick: minimal QA. All modes require a clear PASS / FAIL / PASS WITH WARNINGS verdict and recorded evidence.
+10. **Specialist Reviews** *(required by the routing table; otherwise as needed, parallel ok)* — findings by severity -> Executor -> re-verification.
+11. **Docs & Skill Extraction** — Full when applicable; Standard+/Standard/Quick only when the change establishes a reusable or user-facing behavior, after all blocking findings are closed.
 
 ## Rules
 
 - Never let one agent do another's job.
+- Always read `.axa/preferences.md` before speccing or executing — apply what the project has already learned.
 - Always read codebase skill files before speccing.
 - Every spec must include "What NOT to Touch" and "Breaking Changes".
 - Executor stops and asks on ambiguity — never improvises.
 - Unit Test Writer never skips Test Plan approval.
 - Standard+ is not a shortcut around security or logic reviews — it only relaxes process checks for pure visual/structural changes with established patterns.
+- Append to `.axa/preferences.md` after every meaningful pipeline decision — never overwrite.
