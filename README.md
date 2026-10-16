@@ -8,7 +8,22 @@ Axa keeps the speed. It adds structure. 17 agents, one job each. The workflow st
 
 ![skill](https://img.shields.io/badge/skill-axa-0e7c7b?style=flat-square)
 ![agents](https://img.shields.io/badge/agents-17-slate?style=flat-square)
+![taste](https://img.shields.io/badge/taste-learning-7c3aed?style=flat-square)
 ![license](https://img.shields.io/badge/license-MIT-green?style=flat-square)
+
+## 🧠 It learns your taste
+
+Every pipeline run makes the next one smarter. When the Planner picks a pattern, Doubt Review accepts a risk, or QA rejects AI slop — Axa writes it down in `.axa/preferences.md`, a living document every agent reads before acting. No rules to write, no prompts to maintain: your taste accumulates automatically, one decision at a time.
+
+- **Planner** records non-obvious spec decisions — pattern chosen, approach ruled out
+- **Doubt Review** records risks knowingly taken, and why
+- **Executor** records what you preferred when the spec got revised mid-flight
+- **QA** records what got flagged as slop — so it never ships twice
+- **Specialist reviews** record which patterns to avoid or reuse in *this* codebase
+
+The patterns you keep, it remembers. The ones you delete, it forgets.
+
+Inspired by [Command Code](https://commandcode.ai/)'s taste learning.
 
 ## Prerequisites
 
