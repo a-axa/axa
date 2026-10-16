@@ -2,6 +2,11 @@
 
 All notable changes to Axa are documented here.
 
+## [1.0.1] - Unreleased
+
+### Added
+- Taste preference learning: `.axa/preferences.md` is now a living document — every agent appends a short entry when a pipeline decision reveals a project preference (pattern chosen, risk accepted, approach ruled out, mistake corrected); append-only, one entry per decision, read by all agents before acting so past decisions are never repeated
+
 ## [1.0.0] - 2026-10-15
 
 ### Added
