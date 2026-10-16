@@ -35,9 +35,29 @@ Only after `.axa/` is confirmed to exist may the pipeline continue.
 
 ## Project Preferences Learning
 
-`.axa/preferences.md` is a living document that grows with the project. Every agent may append to it when a pipeline decision reveals a project preference — a pattern chosen, a risk accepted, an approach ruled out, a mistake corrected. It is read by all agents before acting so past decisions are not repeated.
+`.axa/preferences.md` is a living document that grows with the project. This is the taste-learning loop, and it has two mandatory halves:
+
+1. **READ FIRST.** No agent plans, executes, reviews, or decides before reading `.axa/preferences.md` in full and applying what it finds. An agent that acts without this read is violating the pipeline — the learning only works if every agent starts from the accumulated taste.
+2. **APPEND AFTER.** Every agent appends to it when a pipeline decision reveals a project preference — a pattern chosen, a risk accepted, an approach ruled out, a mistake corrected.
 
 **Never overwrite — append only. One entry per decision, short and specific.**
+
+### When to read
+
+| Agent | Read before |
+|-------|-------------|
+| Decomposer | Splitting scope — apply recorded structural preferences |
+| Planner | Writing the spec — apply chosen patterns, respect ruled-out approaches |
+| Doubt Review | Assessing risk — check already-accepted risks so they are not re-flagged |
+| Executor | Writing code — use preferred patterns, avoid flagged ones |
+| Unit Test Writer | Writing the test plan — use the recorded test approach for this project |
+| QA | Giving a verdict — check accepted/rejected findings and recorded slop patterns |
+| Specialist Reviews | Reviewing — check recorded pattern approvals and avoidances |
+| UI/UX Planner | Designing — apply recorded visual decisions to new screens |
+| Documentation | Writing docs — match recorded documentation conventions |
+| Skill Extractor | Extracting — skip patterns already captured in preferences |
+
+If `.axa/preferences.md` is empty or missing, the read still happens (confirm the file state) and the agent proceeds — then appends the first entries as decisions are made.
 
 ### When to write
 
@@ -205,7 +225,7 @@ If your context was compacted, the session restarted, or you are picking up exis
 ## Instructions
 
 1. **Read the agent file before acting.** Never summarize from memory.
-2. **Read `.axa/preferences.md` before acting.** Apply recorded project preferences — do not repeat decisions already made.
+2. **Read `.axa/preferences.md` before acting — no exceptions.** This is the taste-learning loop: apply the recorded taste first, then work. An agent that skips this read is violating the pipeline.
 3. **Follow each agent's process exactly.** Boundaries are intentional.
 4. **Respect the selected mode.** Full Pipeline requires Planner and QA; Standard+ and Standard require Planner Lite and QA; Quick may skip Planner only with a recorded Quick Change Record and minimal QA. Don't skip QA to ship.
 5. **Checkpoints (two channels):**
@@ -219,7 +239,7 @@ If your context was compacted, the session restarted, or you are picking up exis
 ## Workflow
 
 1. **Setup** — confirm `.axa/` exists and `tickets.md` is present. If not, create them per First Run Setup above. Then run the anti-slop gate.
-2. **Read preferences** — read `.axa/preferences.md` in full. Apply all recorded project preferences before any planning or execution.
+2. **Read preferences** — hard gate: read `.axa/preferences.md` in full before any agent starts work. No agent plans, executes, or reviews until this read is done. Apply all recorded project preferences before any planning or execution.
 3. **Select mode** — STOP and ask the user to choose explicitly (Full / Standard+ / Standard / Quick), presenting your recommendation. Validate the choice against the eligibility rules; refuse unsafe picks with an explanation. Record the mode and reason in the issue body.
 4. **Decompose** *(Full only, optional)* — `agents/decomposer.md`. Output the task list as an issue comment. Stop for review.
 5. **Plan** — Full: `agents/planner.md` full spec. Standard+/Standard: Planner Lite spec. Quick: Quick Change Record only. Show the plan in chat; write it to the issue body only after the user's explicit approval.
@@ -233,7 +253,7 @@ If your context was compacted, the session restarted, or you are picking up exis
 ## Rules
 
 - Never let one agent do another's job.
-- Always read `.axa/preferences.md` before speccing or executing — apply what the project has already learned.
+- No agent acts before reading `.axa/preferences.md` in full — read first, apply the recorded taste, then work. This is what makes taste actually learning.
 - Always read codebase skill files before speccing.
 - Every spec must include "What NOT to Touch" and "Breaking Changes".
 - Executor stops and asks on ambiguity — never improvises.
