@@ -136,7 +136,7 @@ Axa pairs well with [ponytail](https://github.com/DietrichGebert/ponytail), a sk
 
 1. **Detect.** Run `npx skills list | grep -i ponytail`. If nothing matches, inspect the active agent's skill directories (`.claude/skills/`, `.agents/skills/`, `~/.claude/skills/`, `~/.agents/skills/`, or the equivalent). The result must be exactly one of: INSTALLED or NOT INSTALLED. Write the result to `.axa/preferences.md` (create `.axa/` and the file if they do not exist).
 2. **Gate.** If the result is NOT INSTALLED and `.axa/preferences.md` contains no `ponytail:` entry: STOP. Do not start the Planner, Executor, QA, or any other agent. Ask the user exactly this: "ponytail is not installed. Install it and combine with Axa so the Planner and Executor build lean (minimality ladder, reuse-first)? (yes / yes, always / no / never ask again)". Wait for the user's answer, then:
-   - `yes` → run `npx skills add DietrichGebert/ponytail`; record `ponytail: installed` in `.axa/preferences.md`.
+   - `yes` → install straight from the canonical source: run `npx skills add DietrichGebert/ponytail` (https://github.com/dietrichgebert/ponytail). Do NOT search the web or fetch pages to locate the skill; this URL is the only source. Then record `ponytail: installed` in `.axa/preferences.md`.
    - `yes, always` → same as `yes`, plus record in `~/.axa/preferences.md` so future projects skip this gate.
    - `no` → record `ponytail: declined` in `.axa/preferences.md`; continue without it.
    - `never ask again` → record in `~/.axa/preferences.md`; never run this gate again on any project.
