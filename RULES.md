@@ -130,6 +130,19 @@ Axa pairs well with [anti-slop](https://github.com/miqdadbadjuber/anti-slop), a 
    Only after the answer is recorded may the pipeline continue.
 3. **Combine only when present.** When the anti-slop skill is available (pre-installed or just installed), the Planner, QA, and Documentation agents must read its core rules. The Planner applies them while writing the plan (see the Anti-slop hard rules in `agents/planner.md`); QA and Documentation add an explicit slop check to their verdicts: reject generic AI-pattern code, copy, and UI. Note: `npx skills add` copies the skill folders but does not write a session auto-load pointer; Axa agents load the anti-slop rules explicitly, so no pointer is needed.
 
+## Companion Skill: ponytail (opt-in)
+
+Axa pairs well with [ponytail](https://github.com/DietrichGebert/ponytail), a skill that makes your agent think like the laziest senior dev in the room: the best code is the code you never wrote. Where anti-slop guards output quality (QA, Documentation), ponytail shapes what gets built and how lean (Planner, Executor). Integration is strictly opt-in. Run this gate ONCE per project, BEFORE any agent runs:
+
+1. **Detect.** Run `npx skills list | grep -i ponytail`. If nothing matches, inspect the active agent's skill directories (`.claude/skills/`, `.agents/skills/`, `~/.claude/skills/`, `~/.agents/skills/`, or the equivalent). The result must be exactly one of: INSTALLED or NOT INSTALLED. Write the result to `.axa/preferences.md` (create `.axa/` and the file if they do not exist).
+2. **Gate.** If the result is NOT INSTALLED and `.axa/preferences.md` contains no `ponytail:` entry: STOP. Do not start the Planner, Executor, QA, or any other agent. Ask the user exactly this: "ponytail is not installed. Install it and combine with Axa so the Planner and Executor build lean (minimality ladder, reuse-first)? (yes / yes, always / no / never ask again)". Wait for the user's answer, then:
+   - `yes` → run `npx skills add DietrichGebert/ponytail`; record `ponytail: installed` in `.axa/preferences.md`.
+   - `yes, always` → same as `yes`, plus record in `~/.axa/preferences.md` so future projects skip this gate.
+   - `no` → record `ponytail: declined` in `.axa/preferences.md`; continue without it.
+   - `never ask again` → record in `~/.axa/preferences.md`; never run this gate again on any project.
+   Only after the answer is recorded may the pipeline continue.
+3. **Combine only when present.** When the ponytail skill is available (pre-installed or just installed), the Planner and Executor must read its rules. The Planner runs the minimality ladder for every planned piece of new code while writing the spec (see `agents/planner.md`). Rungs: 1. does it need to exist, 2. already in this codebase, 3. standard library or platform feature, 4. installed dependency (never add one for a few lines), 5. one line a reader gets at a glance, 6. otherwise the minimum that works. Record the justifying rung (or the existing code reused) per spec item. Full Pipeline uses the full ladder; Standard+ and Standard keep the YAGNI check without per-item records; Quick is trivially minimal by definition. The Executor implements the minimum per spec, reuse-first: no abstraction, wrapper, type conversion, option, config, boilerplate, or "for later" code nobody asked for. Deletion beats addition. Bug fixes: grep every caller first, then fix the root cause once in the shared code. A deliberate shortcut gets a `shortcut: <the limit>, <when to upgrade>` comment. QA adds a cut-list to Phase 5 findings: flag over-engineering (unasked abstractions, wrappers, boilerplate, speculative flexibility) as Warning findings. Never flag the never-cut list: validation at trust boundaries, error handling that prevents data loss, security, accessibility, anything the user explicitly asked for. Harvest `shortcut:` comments into the issue body `## Tech Debt` section. Note: `npx skills add` copies the skill folders but does not write a session auto-load pointer; Axa agents load the ponytail rules explicitly, so no pointer is needed.
+
 ## Agents
 
 | Agent | File | When |
@@ -169,17 +182,7 @@ The user explicitly chooses the mode. Before any agent runs: STOP, present all f
 
 ## Lean Code Discipline
 
-Axa wraps code in a lot of process. These values keep the code itself lean. They were adapted from an audit of ponytail (https://github.com/DietrichGebert/ponytail, MIT). No external skill is required: the values below are native Axa rules.
-
-**Planner:** before writing the spec, run the minimality ladder for every planned piece of new code. Rungs: 1. does it need to exist, 2. already in this codebase, 3. standard library or platform feature, 4. installed dependency (never add one for a few lines), 5. one line a reader gets at a glance, 6. otherwise the minimum that works. Record the justifying rung (or the existing code reused) per spec item. Full Pipeline uses the full ladder; Standard+ and Standard keep the YAGNI check without per-item records; Quick is trivially minimal by definition.
-
-**Executor:** implement the minimum per spec, reuse-first. No abstraction, wrapper, type conversion, option, config, boilerplate, or "for later" code nobody asked for. Deletion beats addition. Bug fixes: grep every caller first, then fix the root cause once in the shared code. A deliberate shortcut gets a `shortcut: <the limit>, <when to upgrade>` comment.
-
-**QA:** add a cut-list to Phase 5 findings. Flag over-engineering (unasked abstractions, wrappers, boilerplate, speculative flexibility) as Warning findings. Never flag the never-cut list: validation at trust boundaries, error handling that prevents data loss, security, accessibility, anything the user explicitly asked for. Harvest `shortcut:` comments into the issue body `## Tech Debt` section.
-
-**Unit Test Writer:** already aligned. New non-trivial logic (a branch, a loop, a parser, money or security handling) leaves one small test; trivial changes need none.
-
-**Explicit non-goal:** leanness applies to shipped code only, never to Axa process artifacts (issue body, comments). The paper trail stays complete; the code stays lean.
+Axa wraps code in a lot of process; the shipped code itself stays lean. Those values come from ponytail (see Companion Skill: ponytail above): the Planner runs the minimality ladder before speccing, the Executor implements reuse-first with no unasked abstraction, and QA keeps a cut-list for over-engineering in Phase 5 findings. Leanness applies to shipped code only, never to Axa process artifacts: the paper trail stays complete, the code stays lean.
 
 ## Required Routing
 
@@ -238,7 +241,7 @@ If your context was compacted, the session restarted, or you are picking up exis
 
 ## Workflow
 
-1. **Setup** — confirm `.axa/` exists and `tickets.md` is present. If not, create them per First Run Setup above. Then run the anti-slop gate.
+1. **Setup**: confirm `.axa/` exists and `tickets.md` is present. If not, create them per First Run Setup above. Then run the companion skill gates (anti-slop, ponytail).
 2. **Read preferences** — hard gate: read `.axa/preferences.md` in full before any agent starts work. No agent plans, executes, or reviews until this read is done. Apply all recorded project preferences before any planning or execution.
 3. **Select mode** — STOP and ask the user to choose explicitly (Full / Standard+ / Standard / Quick), presenting your recommendation. Validate the choice against the eligibility rules; refuse unsafe picks with an explanation. Record the mode and reason in the issue body.
 4. **Decompose** *(Full only, optional)* — `agents/decomposer.md`. Output the task list as an issue comment. Stop for review.
