@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>task-0042 — ORBIT Task 2 — assignment engine unit tests · Axa thread</title>
+<style>
+:root { color-scheme: light; }
+* { box-sizing: border-box; }
+body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+       margin: 0; background: #f6f8fa; color: #1f2328; line-height: 1.5; }
+.wrap { max-width: 880px; margin: 0 auto; padding: 24px 20px 64px; }
+a { color: #0969da; text-decoration: none; }
+a:hover { text-decoration: underline; }
+.header { background: #fff; border: 1px solid #d0d7de; border-radius: 6px; padding: 20px 24px; margin-bottom: 16px; }
+.header h1 { font-size: 22px; margin: 0 0 8px; font-weight: 600; }
+.header h1 .tid { color: #59636e; font-weight: 400; }
+.meta { color: #59636e; font-size: 13px; }
+.badge { display: inline-block; padding: 2px 10px; border-radius: 2em; color: #fff;
+         font-size: 12px; font-weight: 600; vertical-align: middle; }
+.badge.done::before { content: "\2713  "; }
+.current { background: #ddf4ff; border: 1px solid #54aeff66; border-radius: 6px;
+           padding: 14px 18px; margin-bottom: 16px; font-size: 14px; }
+.current strong { display: block; margin-bottom: 4px; }
+.section { background: #fff; border: 1px solid #d0d7de; border-radius: 6px;
+           padding: 18px 22px; margin-bottom: 16px; }
+.section h2 { font-size: 15px; margin: 0 0 12px; padding-bottom: 8px;
+              border-bottom: 1px solid #d0d7de; }
+.plan li { list-style: none; margin: 6px 0; }
+.plan { padding: 0; margin: 0; }
+.plan .st { display: inline-block; width: 74px; font-size: 12px; font-weight: 600;
+            border-radius: 2em; text-align: center; padding: 1px 0; margin-right: 8px;}
+.st.done { background: #1a7f37; color: #fff; }
+.st.in-progress { background: #9a6700; color: #fff; }
+.st.pending { background: #eaeef2; color: #59636e; }
+.progress { height: 8px; background: #eaeef2; border-radius: 4px; margin: 12px 0 4px; }
+.progress > div { height: 8px; background: #1a7f37; border-radius: 4px; }
+.timeline { position: relative; margin: 0; padding: 0 0 0 26px; }
+.timeline::before { content: ""; position: absolute; left: 8px; top: 8px; bottom: 8px;
+                   width: 2px; background: #d0d7de; }
+.handoff { position: relative; background: #fff; border: 1px solid #d0d7de;
+          border-radius: 6px; margin-bottom: 14px; }
+.handoff::before { content: ""; position: absolute; left: -24px; top: 18px;
+                  width: 10px; height: 10px; border-radius: 50%;
+                  background: #0969da; border: 2px solid #f6f8fa; }
+.handoff .chead { background: #f6f8fa; border-bottom: 1px solid #d0d7de;
+                 padding: 8px 14px; font-size: 13px; border-radius: 6px 6px 0 0; }
+.handoff .chead .route { font-weight: 600; }
+.handoff .chead time { color: #59636e; float: right; }
+.handoff .cbody { padding: 12px 14px; font-size: 14px; }
+.handoff .cbody .summary { font-size: 15px; margin: 0 0 8px; }
+.handoff details { margin-top: 8px; font-size: 13px; color: #333; }
+.handoff details summary { cursor: pointer; color: #0969da; }
+.chips { margin-top: 10px; }
+.chip { display: inline-block; background: #eaeef2; border-radius: 2em;
+        font-size: 12px; padding: 2px 10px; margin: 0 6px 6px 0;
+        font-family: ui-monospace, monospace; }
+.via { display: inline-block; font-size: 11px; color: #59636e; border: 1px solid #d0d7de;
+       border-radius: 2em; padding: 1px 8px; margin-left: 8px; vertical-align: middle;}
+table.ledger { width: 100%; border-collapse: collapse; font-size: 13px; }
+table.ledger th, table.ledger td { border: 1px solid #d0d7de; padding: 8px 10px; text-align: left; }
+table.ledger th { background: #f6f8fa; }
+dl.verif { margin: 0; font-size: 14px; }
+dl.verif dt { font-weight: 600; margin-top: 8px; }
+dl.verif dd { margin: 2px 0 0; color: #333; }
+dl.verif code, .mono { font-family: ui-monospace, monospace; font-size: 13px;
+                       background: #eaeef2; padding: 1px 6px; border-radius: 4px; }
+ul.debt { margin: 0; padding-left: 20px; font-size: 14px; }
+.footer { color: #59636e; font-size: 12px; text-align: center; margin-top: 24px; }
+.idx-table { width: 100%; border-collapse: collapse; font-size: 14px; background: #fff; }
+.idx-table th, .idx-table td { border: 1px solid #d0d7de; padding: 10px 14px; text-align: left; }
+.idx-table th { background: #f6f8fa; }
+.empty { color: #59636e; font-style: italic; font-size: 14px; }
+</style></head>
+<body><div class="wrap">
+
+<div class="header">
+  <h1><span class="tid">task-0042</span> ORBIT Task 2 — assignment engine unit tests</h1>
+  <div><span class="badge" style="background:#0a3069">documenting</span> <span class="meta">mode: Standard ·
+  created 2026-10-15</span></div>
+</div>
+
+<div class="current">
+  <strong>Current handoff</strong>
+  stage: <span class="badge" style="background:#0a3069">documenting</span> &nbsp;·&nbsp;
+  next: <b>documentation</b> &nbsp;·&nbsp;
+  blocking: <span class="empty">none</span> &nbsp;·&nbsp;
+  <span class="meta">updated 2026-10-15</span>
+</div>
+
+<div class="section"><h2>Feature</h2>
+  <dl class="verif">
+    <dt>Owner</dt><dd>aska</dd>
+    <dt>Branch</dt><dd><span class="mono">feat/orbit-task-2-tests</span></dd>
+    <dt>Scope</dt><dd>Unit test coverage for the lead assignment engine, including the N+1 fix found mid-run.</dd>
+    <dt>Mode rationale</dt><dd>Focused scope: unit tests for one engine, no migration risk.</dd>
+  </dl>
+</div>
+
+<div class="section"><h2>Plan</h2><div class="progress"><div style="width:100%"></div></div><p class="meta">3/3 steps done</p><ul class="plan"><li><span class="st done">done</span><span class="mono">P1</span> Spec the assignment engine edge cases</li><li><span class="st done">done</span><span class="mono">P2</span> Write unit tests for assignment paths</li><li><span class="st done">done</span><span class="mono">P3</span> QA pass with concrete evidence</li></ul></div>
+
+<div class="section"><h2>Thread &mdash; 6 handoff(s)</h2><div class="timeline">
+        <div class="handoff">
+          <div class="chead">
+            <span class="route">decomposer &rarr; planner</span>
+            <span class="via">approved via pipeline</span><span class="via">model: kr/claude-sonnet-4.5</span>
+            <time>2026-10-15 09:12:00+07:00</time>
+          </div>
+          <div class="cbody">
+            <p class="summary">Scope decomposed: 3 test targets (happy path, fallthrough, N+1 guard). No UI, no migration.</p>
+            <details><summary>full detail</summary><p>Decomposer output: assignment engine has 3 public entry points; fallthrough logic branches on 4 conditions; DB layer untested.</p></details>
+          </div>
+        </div>
+        <div class="handoff">
+          <div class="chead">
+            <span class="route">planner &rarr; doubt-review</span>
+            <span class="via">approved via chat</span><span class="via">model: kr/claude-sonnet-4.5</span>
+            <time>2026-10-15 09:40:00+07:00</time>
+          </div>
+          <div class="cbody">
+            <p class="summary">Plan drafted: 3 steps, P2 is the risky one (fallthrough matrix). Waiting for your approval.</p>
+            <details><summary>full detail</summary><p>Full planner spec: 14 edge cases enumerated; ruled out property-based testing (overkill for 4-branch matrix); P2 estimated 60% of effort.</p></details>
+          </div>
+        </div>
+        <div class="handoff">
+          <div class="chead">
+            <span class="route">doubt-review &rarr; executor</span>
+            <span class="via">approved via pipeline</span><span class="via">model: ag/claude-sonnet-4-6</span>
+            <time>2026-10-15 10:05:00+07:00</time>
+          </div>
+          <div class="cbody">
+            <p class="summary">READY. One risk knowingly accepted: timing-sensitive assertion may flake on slow CI.</p>
+            <details><summary>full detail</summary><p>Doubt Review verdict: plan is sound. 14 edge cases cover the matrix. Accepted risk: QA-002 timing assertion — accepted because it guards real behavior and flakes loudly, not silently.</p></details>
+          </div>
+        </div>
+        <div class="handoff">
+          <div class="chead">
+            <span class="route">executor &rarr; unit-test-writer</span>
+            <span class="via">approved via pipeline</span><span class="via">model: kr/claude-sonnet-4.5</span>
+            <time>2026-10-15 13:20:00+07:00</time>
+          </div>
+          <div class="cbody">
+            <p class="summary">Implementation done. Engine refactored for testability; no behavior change.</p>
+            <details><summary>full detail</summary><p>Extracted pure decision function from the DB-coupled path so the matrix is unit-testable without MySQL. Commit 5f11a02.</p></details><div class="chips"><span class="chip">commit 5f11a02</span></div>
+          </div>
+        </div>
+        <div class="handoff">
+          <div class="chead">
+            <span class="route">unit-test-writer &rarr; qa</span>
+            <span class="via">approved via pipeline</span><span class="via">model: kr/claude-sonnet-4.5</span>
+            <time>2026-10-15 15:47:00+07:00</time>
+          </div>
+          <div class="cbody">
+            <p class="summary">Caught a REAL N+1 bug in the assignment query while writing tests. Fixed, test now guards it.</p>
+            <details><summary>full detail</summary><p>While covering the fallthrough matrix, the writer noticed the assignment query ran once per lead (N+1). Fixed with a single batched query; added a query-count assertion so it can never regress silently. Commit 6c0196c.</p></details><div class="chips"><span class="chip">commit 6c0196c</span></div>
+          </div>
+        </div>
+        <div class="handoff">
+          <div class="chead">
+            <span class="route">qa &rarr; documentation</span>
+            <span class="via">approved via pipeline</span><span class="via">model: ag/claude-sonnet-4-6</span>
+            <time>2026-10-15 16:30:00+07:00</time>
+          </div>
+          <div class="cbody">
+            <p class="summary">PASS: 46 tests / 107 assertions, all green. 2 findings ledgered (1 fixed, 1 accepted risk).</p>
+            <details><summary>full detail</summary><p>QA evidence: full phpunit run output archived; lint clean; manual dry-run on staging seed matched the spec table row-for-row. QA-001 fixed and verified; QA-002 accepted as known-flaky with rationale.</p></details><div class="chips"><span class="chip">commit 6c0196c</span></div>
+          </div>
+        </div></div></div>
+
+<div class="section"><h2>Findings ledger</h2><table class="ledger"><tr><th>ID</th><th>Source</th><th>Severity</th>
+               <th>Status</th><th>Owner</th><th>Verification</th></tr><tr><td>QA-001</td><td>Unit Test Writer</td><td>Critical</td><td>Fixed</td><td>executor</td><td>repro test failed before fix, passed after (commit 6c0196c)</td></tr><tr><td>QA-002</td><td>QA</td><td>Minor</td><td>Accepted risk</td><td>qa</td><td>flaky timing assertion; documented, not load-bearing</td></tr></table></div>
+
+<div class="section"><h2>Verification evidence</h2><dl class="verif">
+      <dt>Tests</dt><dd><span class="mono">vendor/bin/phpunit --filter Assignment</span> &mdash; 46 passed / 107 assertions</dd>
+      <dt>Build / lint / typecheck</dt><dd><span class="mono">composer lint</span> &mdash; clean</dd>
+      <dt>Manual verification</dt><dd>Ran assignment dry-run on staging seed data; distribution matched spec table.</dd>
+      <dt>Not verified</dt><dd>MySQL FK cascade delete path — deferred as tech debt (no MySQL in CI).</dd>
+    </dl></div>
+
+<div class="section"><h2>Tech debt <span class="meta">(append-only)</span></h2><ul class='debt'><li>FK cascade delete on leads table untested (MySQL not in CI)</li><li>Inertia shared prop auth.tenant unverified</li></ul></div>
+
+<div class="footer">generated 2026-10-21 00:58 WIB from <span class="mono">state.yaml</span>
+&mdash; do not edit this file by hand &middot; <a href="index.html">&larr; all tasks</a></div>
+
+</div></body></html>

@@ -11,6 +11,17 @@ Axa keeps the speed. It adds structure. 17 agents, one job each. The workflow st
 ![taste](https://img.shields.io/badge/taste-learning-7c3aed?style=flat-square)
 ![license](https://img.shields.io/badge/license-MIT-green?style=flat-square)
 
+## 🛡️ Whoever built it never grades it
+
+Most agent pipelines let the same session write the code and review it — that's how "looks good" happens. Axa enforces separation of duties:
+
+- review stages (QA, Doubt Review, specialists) run in **fresh sessions**, never the one that built the work
+- reviewers read **blind-first**: plan → code → own findings → *then* the builder's summary
+- verdicts are **bound to the exact commit SHA** — a new commit invalidates them
+- fix ping-pong is **capped at 2 rounds**, then it escalates to you
+
+And if you have more than one model available, reviewers run on a **different model** than builders. Best effort, honestly reported. See `RULES.md` § Separation of Duties (pattern paired from [claudex-loop](https://github.com/chaseai-yt/claudex-loop)). Example output: [`examples/task-0042/thread.html`](examples/task-0042/thread.html).
+
 ## 🧠 It learns your taste
 
 Every pipeline run makes the next one smarter. When the Planner picks a pattern, Doubt Review accepts a risk, or QA rejects AI slop — Axa writes it down in `.axa/preferences.md`, a living document every agent reads before acting. No rules to write, no prompts to maintain: your taste accumulates automatically, one decision at a time.

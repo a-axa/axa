@@ -1,0 +1,97 @@
+# EXAMPLE — modeled on the real ORBIT issue #4 (Task 2) validation run.
+axa_version: "2.0"
+id: task-0042
+title: "ORBIT Task 2 — assignment engine unit tests"
+created: 2026-10-15
+stage: documenting
+mode: Standard
+mode_rationale: "Focused scope: unit tests for one engine, no migration risk."
+
+feature:
+  owner: aska
+  branch: feat/orbit-task-2-tests
+  scope_summary: "Unit test coverage for the lead assignment engine, including the N+1 fix found mid-run."
+
+plan:
+  - {id: P1, text: "Spec the assignment engine edge cases", status: done}
+  - {id: P2, text: "Write unit tests for assignment paths", status: done}
+  - {id: P3, text: "QA pass with concrete evidence", status: done}
+
+routing:
+  planner:          {required: true,  reason: "edge cases need a spec first"}
+  doubt_review:     {required: true,  reason: "assignment logic has subtle fallthroughs"}
+  unit_test_writer: {required: true,  reason: "this task IS the unit tests"}
+  security_review:  {required: false, reason: "no auth surface touched"}
+
+findings:
+  - {id: QA-001, source: Unit Test Writer, severity: Critical, status: Fixed,
+     owner: executor, verification: "repro test failed before fix, passed after (commit 6c0196c)"}
+  - {id: QA-002, source: QA, severity: Minor, status: Accepted risk,
+     owner: qa, verification: "flaky timing assertion; documented, not load-bearing"}
+
+verification:
+  tests:      {command: "vendor/bin/phpunit --filter Assignment", result: "46 passed / 107 assertions"}
+  build_lint: {command: "composer lint", result: "clean"}
+  manual:     "Ran assignment dry-run on staging seed data; distribution matched spec table."
+  not_verified: "MySQL FK cascade delete path — deferred as tech debt (no MySQL in CI)."
+
+handoffs:
+  - at: 2026-10-15T09:12:00+07:00
+    from: decomposer
+    model: "kr/claude-sonnet-4.5"
+    to: planner
+    summary: "Scope decomposed: 3 test targets (happy path, fallthrough, N+1 guard). No UI, no migration."
+    detail: "Decomposer output: assignment engine has 3 public entry points; fallthrough logic branches on 4 conditions; DB layer untested."
+    approved_via: pipeline
+    artifacts: []
+  - at: 2026-10-15T09:40:00+07:00
+    from: planner
+    model: "kr/claude-sonnet-4.5"
+    to: doubt-review
+    summary: "Plan drafted: 3 steps, P2 is the risky one (fallthrough matrix). Waiting for your approval."
+    detail: "Full planner spec: 14 edge cases enumerated; ruled out property-based testing (overkill for 4-branch matrix); P2 estimated 60% of effort."
+    approved_via: chat
+    artifacts: []
+  - at: 2026-10-15T10:05:00+07:00
+    from: doubt-review
+    model: "ag/claude-sonnet-4-6"
+    to: executor
+    summary: "READY. One risk knowingly accepted: timing-sensitive assertion may flake on slow CI."
+    detail: "Doubt Review verdict: plan is sound. 14 edge cases cover the matrix. Accepted risk: QA-002 timing assertion — accepted because it guards real behavior and flakes loudly, not silently."
+    approved_via: pipeline
+    artifacts: []
+  - at: 2026-10-15T13:20:00+07:00
+    from: executor
+    model: "kr/claude-sonnet-4.5"
+    to: unit-test-writer
+    summary: "Implementation done. Engine refactored for testability; no behavior change."
+    detail: "Extracted pure decision function from the DB-coupled path so the matrix is unit-testable without MySQL. Commit 5f11a02."
+    approved_via: pipeline
+    artifacts: ["commit 5f11a02"]
+  - at: 2026-10-15T15:47:00+07:00
+    from: unit-test-writer
+    model: "kr/claude-sonnet-4.5"
+    to: qa
+    summary: "Caught a REAL N+1 bug in the assignment query while writing tests. Fixed, test now guards it."
+    detail: "While covering the fallthrough matrix, the writer noticed the assignment query ran once per lead (N+1). Fixed with a single batched query; added a query-count assertion so it can never regress silently. Commit 6c0196c."
+    approved_via: pipeline
+    artifacts: ["commit 6c0196c"]
+  - at: 2026-10-15T16:30:00+07:00
+    from: qa
+    model: "ag/claude-sonnet-4-6"
+    to: documentation
+    summary: "PASS: 46 tests / 107 assertions, all green. 2 findings ledgered (1 fixed, 1 accepted risk)."
+    detail: "QA evidence: full phpunit run output archived; lint clean; manual dry-run on staging seed matched the spec table row-for-row. QA-001 fixed and verified; QA-002 accepted as known-flaky with rationale."
+    approved_via: pipeline
+    artifacts: ["commit 6c0196c"]
+
+tech_debt:
+  - "FK cascade delete on leads table untested (MySQL not in CI)"
+  - "Inertia shared prop auth.tenant unverified"
+
+current:
+  stage: documenting
+  next_agent: documentation
+  blocking: null
+  last_updated: 2026-10-15
+  pointer: "handoffs[-1]"
