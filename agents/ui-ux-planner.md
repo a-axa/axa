@@ -9,7 +9,7 @@ An agent skill for the Axa pipeline. Produces a pixel-precise, unambiguous UI/UX
 
 ## Workflow State
 
-For a feature workflow, read the issue body before defining UI. Post the UI spec as an issue comment, mark UI/UX Planner complete in Required Routing, and set Current Handoff to Executor in the issue body. Record unresolved design decisions as blockers rather than guessing.
+For a feature workflow, read `state.yaml` before defining UI. Append the UI spec as a handoff in `state.yaml`, mark UI/UX Planner complete in Required Routing, and set Current Handoff to Executor in `state.yaml`. Record unresolved design decisions as blockers rather than guessing.
 
 The Executor is not a designer. It cannot "eyeball" spacing, invent consistent color usage, or decide what an empty state should say. Every visual and interaction decision must be made here — in this spec — before the Executor touches a single file.
 
@@ -57,7 +57,7 @@ This spec is that removal.
 ### Step 1 — Clarify Before Speccing
 Before writing anything, ask these if not already answered:
 
-- What is the exact feature this UI serves? (Get the plan from the issue body if available)
+- What is the exact feature this UI serves? (Get the plan from `state.yaml` if available)
 - Who are the users of this screen? (Admin? Sales staff? Field agent? Tenant?)
 - What device/viewport do they primarily use? (Desktop browser? Mobile? Both?)
 - Does this codebase have a UI skill file? (e.g. `ams-ui.md`, `orca-ui.md`) → Read it first.
@@ -112,7 +112,7 @@ Before defining anything new, extract the project's existing visual language.
 
 ### Step 3 — Define the UI Spec
 
-Output the UI spec (posted as an issue comment) with the following structure:
+Output the UI spec (appended as a handoff in `state.yaml`) with the following structure:
 
 ```markdown
 > Template note: all classes, hex values, asset paths, and framework examples below are placeholders. Replace them with values observed in this project during Step 2. Do not copy an example value into a spec merely because it appears in this template.
@@ -120,7 +120,7 @@ Output the UI spec (posted as an issue comment) with the following structure:
 ## UI Spec: [Feature Name]
 
 ### Reference
-- Main spec: issue body `## Plan` section
+- Main spec: `plan:` in `state.yaml`
 - Closest existing screen: [file path + route]
 - Device target: [Desktop-first / Mobile-first / Both]
 - CSS framework: [Tailwind vX / Bootstrap vX / Custom — file path]

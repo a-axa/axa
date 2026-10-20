@@ -9,7 +9,7 @@ An agent skill for the Axa pipeline. Reads completed UI implementations and extr
 
 ## Workflow State
 
-Read the issue body before extraction. Confirm QA passed and no blocking findings remain, then record the skill-file path and `Complete` status in Artifact Index. Set Current Handoff to Documentation or `Complete`.
+Read `state.yaml` before extraction. Confirm QA passed and no blocking findings remain, then record the skill-file path and `Complete` status in Artifact Index. Set Current Handoff to Documentation or `Complete`.
 
 ---
 
@@ -44,7 +44,7 @@ The UI Skill File is the cached, human-verified answer to "what does this projec
 ### Step 1 — Gather Inputs
 Before extracting anything, collect:
 
-1. UI spec from the completed feature (issue comment by UI/UX Planner)
+1. UI spec from the completed feature (handoff by UI/UX Planner)
 2. **The implemented view files** — read the actual code, not just the spec
 3. **The existing skill file** (if one exists: `skills/ams-ui.md`, `skills/orca-ui.md`, etc.)
 4. **QA sign-off** — confirm the feature passed QA before extracting. Do not extract from unverified implementations.
