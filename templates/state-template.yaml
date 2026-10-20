@@ -1,0 +1,64 @@
+# Axa task state — the source of truth for agents (backend: local).
+# Copy to .axa/tasks/<task-id>/state.yaml and fill in.
+# thread.html is GENERATED from this file by .axa/render-thread.py — never edit it by hand.
+#
+# TOKEN PROTOCOL (binding, see RULES.md):
+# - Start every stage by reading ONLY: `current`, the latest handoff's
+#   `summary`, and the `plan` steps for your own stage.
+# - Read `detail` or older handoffs only when the summary is insufficient —
+#   and say why in your own handoff.
+# - `summary` <= ~280 chars, decision-focused. `detail` carries evidence/logs.
+
+axa_version: "0.2"
+id: task-0000
+title: ""
+created: 2026-10-20
+backend: local                      # local | github
+issue_url: null                     # set when backend: github
+stage: planning                     # decomposing|planning|doubt-review|executing|qa|review|documenting|extracting|done
+mode: Standard                      # Full Pipeline | Standard | Quick
+mode_rationale: ""
+
+feature:
+  owner: ""
+  branch: ""
+  scope_summary: ""
+
+plan:                               # written only after the user approves the draft in chat
+  - {id: P1, text: "", status: pending}   # status: pending|in-progress|done
+
+routing:
+  planner:          {required: true,  reason: ""}
+  doubt_review:     {required: false, reason: ""}
+  unit_test_writer: {required: false, reason: ""}
+  # add other agents as needed: security_review, performance_review,
+  # migration_review, architecture_review, ui_ux_planner, api_agent, ...
+
+findings:                           # Findings Ledger — appended by QA / reviewers
+  # - {id: QA-001, source: QA, severity: Warning, status: Open,
+  #    owner: qa, verification: ""}
+
+verification:
+  tests:         {command: "", result: ""}
+  build_lint:    {command: "", result: ""}
+  manual:        ""
+  not_verified:  ""
+
+handoffs:                           # THE THREAD — append-only, chronological
+  - at: 2026-10-20T10:00:00+07:00
+    from: planner
+    to: executor
+    summary: ""
+    detail: ""
+    approved_via: chat              # chat | pipeline
+    artifacts: []                   # commit SHAs, file paths, links
+
+tech_debt:                          # append-only, harvested by QA — never overwritten
+  []
+
+current:                            # CHEAP ENTRY POINT — read this first, always
+  stage: planning
+  next_agent: planner
+  blocking: null
+  last_updated: 2026-10-20
+  pointer: "handoffs[-1]"
