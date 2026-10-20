@@ -9,7 +9,7 @@ An agent skill for the Axa pipeline. Produces precise, unambiguous API contracts
 
 ## Workflow State
 
-For a feature workflow, read the issue body before writing a contract or audit. Add produced API/integration artifacts to Artifact Index notes, record audit findings as `API-###`, and set Current Handoff to Planner or Executor. If the API work triggers Security, Performance, or Migration Review, make sure the planner records that routing decision.
+For a feature workflow, read `state.yaml` before writing a contract or audit. Add produced API/integration artifacts to Artifact Index notes, record audit findings as `API-###`, and set Current Handoff to Planner or Executor. If the API work triggers Security, Performance, or Migration Review, make sure the planner records that routing decision.
 
 ---
 
@@ -475,7 +475,7 @@ X issues found: Y critical, Z warnings, W minor.
 - [list what's already correct — so Executor doesn't accidentally "fix" it]
 
 ### Recommended Actions for Planner
-[Summary of findings that need a full plan (issue body) to fix]
+[Summary of findings that need a full plan (`state.yaml`) to fix]
 ```
 
 ---

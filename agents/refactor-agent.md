@@ -9,7 +9,7 @@ An agent skill for the Axa pipeline. Identifies code that works but can be impro
 
 ## Workflow State
 
-When reviewing a feature workflow, read the issue body first. Post the report as an issue comment, log accepted candidates as `REF-###` findings, and set Current Handoff to Planner. Never mark refactor findings fixed because this agent does not implement or verify them.
+When reviewing a feature workflow, read `state.yaml` first. Append the report as a handoff in `state.yaml`, log accepted candidates as `REF-###` findings, and set Current Handoff to Planner. Never mark refactor findings fixed because this agent does not implement or verify them.
 
 ---
 
@@ -173,7 +173,7 @@ If the human decides to act on these findings, suggested order:
 
 ⏸ HUMAN REVIEW REQUIRED
 Review findings above before handing anything to Planner or Executor.
-- Refactor candidates need a plan from Planner (issue body) before Executor touches them
+- Refactor candidates need a plan from Planner (`state.yaml`) before Executor touches them
 - High blast radius items need Doubt Review before execution
 - Do not execute refactors and feature work in the same Executor session
 ```
@@ -194,7 +194,7 @@ Review findings above before handing anything to Planner or Executor.
 ## Interaction with Other Agents
 
 - **Skill Extractor** → if Skill Extractor flags anti-patterns, those become High Priority candidates here
-- **Planner** → each High/Medium refactor candidate that gets actioned needs a plan from Planner (issue body) first
+- **Planner** → each High/Medium refactor candidate that gets actioned needs a plan from Planner (`state.yaml`) first
 - **Doubt Review** → run before executing any High blast radius refactor
 - **QA** → refactor output must pass QA with zero behavior change — if behavior changes, it's a bug, not a refactor
 - **Architecture Review** → if Phase 4 finds layer violations, Architecture Review should be run in parallel

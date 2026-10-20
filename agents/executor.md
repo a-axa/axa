@@ -1,6 +1,6 @@
 ---
 name: executor
-description: "Implement the approved plan (issue body) step by step, exactly as written. Use this skill when a spec is ready to build - including when the user says 'execute the plan' or 'kerjain sesuai plan'. Never improvises; stops and asks on ambiguity."
+description: "Implement the approved plan (`state.yaml`) step by step, exactly as written. Use this skill when a spec is ready to build - including when the user says 'execute the plan' or 'kerjain sesuai plan'. Never improvises; stops and asks on ambiguity."
 ---
 
 # Executor
@@ -9,7 +9,7 @@ An agent skill for the Axa pipeline. Implements the Planner's spec step by step,
 
 ## Workflow State
 
-Before execution, read the issue body (`gh issue view <number>`) with the plan. Confirm its routing decisions and open findings match the work you were asked to perform. Update it as you work:
+Before execution, read `state.yaml` with the plan (selective read: `current`, latest handoff `summary`, your `plan` steps). Confirm its routing decisions and open findings match the work you were asked to perform. Update it as you work:
 
 - Record implementation progress and changed-file summary in the Plan notes.
 - Mark approved findings `Fixed` only after recording the affected files; never close them yourself.
@@ -20,16 +20,16 @@ Before execution, read the issue body (`gh issue view <number>`) with the plan. 
 
 ## Trigger
 Activate this agent when:
-- An approved plan already exists in the issue body
+- An approved plan already exists in `state.yaml`
 - User says "execute the plan", "implement this spec", "kerjain sesuai plan"
 
 ---
 
 ## Mode-Specific Entry Rules
 
-- **Full Pipeline:** execute the approved full plan (issue body) only.
+- **Full Pipeline:** execute the approved full plan (`state.yaml`) only.
 - **Standard:** execute the approved Planner Lite spec only. If actual scope grows beyond two files or a routing trigger appears, stop and ask for Full Pipeline planning.
-- **Quick:** before editing, add this Quick Change Record to the issue body and Session Log:
+- **Quick:** before editing, add this Quick Change Record to `state.yaml` (as a handoff, updating `current:`):
 
   ```markdown
   - Target file:

@@ -9,7 +9,7 @@ An agent skill for the Axa pipeline. Takes a markdown spec (SKILL.md, feature do
 
 ## Workflow State
 
-For a feature workflow, read the issue body before analyzing the spec. Update it at each checkpoint:
+For a feature workflow, read `state.yaml` before analyzing the spec. Update it at each checkpoint:
 
 - Add the Test Plan path and mark it `Pending approval` before presenting it.
 - Mark the plan `Approved` only after explicit human approval.

@@ -9,7 +9,7 @@ An agent skill for the Axa pipeline. Evaluates whether newly implemented code re
 
 ## Workflow State
 
-Read the issue body before reviewing. Post the report as an issue comment, mark Architecture Review complete, and add each finding to Findings Ledger with IDs such as `ARCH-001`. Set Current Handoff to Executor if findings remain; re-check any Critical violation after it is fixed.
+Read `state.yaml` before reviewing. Append the report as a handoff in `state.yaml`, mark Architecture Review complete, and add each finding to Findings Ledger with IDs such as `ARCH-001`. Set Current Handoff to Executor if findings remain; re-check any Critical violation after it is fixed.
 
 ---
 
@@ -25,7 +25,7 @@ Activate this agent when:
 
 ## Required Inputs
 Before starting, you need:
-1. The original plan in the issue body (especially the "Skill Files Read" section)
+1. The original plan in `state.yaml` (especially the "Skill Files Read" section)
 2. The list of files changed by the Executor
 3. The relevant skill file(s) for this codebase
 4. Access to read the changed files

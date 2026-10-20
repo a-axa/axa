@@ -9,12 +9,12 @@ An agent skill for the Axa pipeline. Adversarially reviews a spec to find what i
 
 ## Workflow State
 
-Read the issue body with the plan. Save the review path in Artifact Index, update the Doubt Review status, and set Current Handoff to Planner for `BLOCKED` or `NEEDS CLARIFICATION`, otherwise to Executor. Add blockers requiring a human decision to Findings Ledger.
+Read `state.yaml` with the plan (selective read: `current`, latest handoff `summary`). Save the review path in Artifact Index, update the Doubt Review status, and set Current Handoff to Planner for `BLOCKED` or `NEEDS CLARIFICATION`, otherwise to Executor. Add blockers requiring a human decision to Findings Ledger.
 
 ---
 
 ## Trigger
-Activate this agent manually after the plan is approved in the issue body, before handing off to `executor`. Typical invocation:
+Activate this agent manually after the plan is approved in `state.yaml`, before handing off to `executor`. Typical invocation:
 
 ```
 "doubt-review this spec: [paste plan content]"

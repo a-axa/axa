@@ -9,7 +9,7 @@ An agent skill for the Axa pipeline. Breaks a large PRD into discrete, well-scop
 
 ## Workflow State
 
-For a feature workflow, look up the issue in `.axa/tickets.md` (create it if none exists). After the human approves the task list, post it as an issue comment and set Current Handoff to Planner in the issue body. Do not decide routing or mark implementation/review work complete.
+For a feature workflow, open `.axa/tasks/<task-id>/state.yaml` (create it from `templates/state-template.yaml` if none exists). After the human approves the task list, append it as a handoff and set `current.next_agent` to Planner in `state.yaml`. Do not decide routing or mark implementation/review work complete.
 
 ---
 

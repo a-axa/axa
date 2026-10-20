@@ -9,7 +9,7 @@ An agent skill for the Axa pipeline. Reviews database migrations before they run
 
 ## Workflow State
 
-Read the issue body before reviewing. Post the report as an issue comment, mark Migration Review complete, and add each finding to Findings Ledger with IDs such as `MIG-001`. Set Current Handoff to Planner or Executor according to the verdict; re-check any Critical finding after it is fixed.
+Read `state.yaml` before reviewing. Append the report as a handoff in `state.yaml`, mark Migration Review complete, and add each finding to Findings Ledger with IDs such as `MIG-001`. Set Current Handoff to Planner or Executor according to the verdict; re-check any Critical finding after it is fixed.
 
 ---
 
@@ -26,7 +26,7 @@ Activate this agent when:
 ## Required Inputs
 Before starting, you need:
 1. The migration file(s) to review
-2. The original plan (issue body `## Plan` section)
+2. The original plan (`plan:` in `state.yaml`)
 3. Context on current production state (is this table live? how many rows?)
 
 If the production context is unknown → ask the user before proceeding. The size of the table changes everything.

@@ -9,7 +9,7 @@ An agent skill for the Axa pipeline. Produces clear, accurate, and useful docume
 
 ## Workflow State
 
-For a feature workflow, read the issue body before documenting. Proceed only after QA and required reviews have closed or explicitly accepted blocking findings. Record each documentation path and `Complete` status in Artifact Index, then set Current Handoff to Skill Extractor, UI Skill Extractor, or `Complete`.
+For a feature workflow, read `state.yaml` before documenting. Proceed only after QA and required reviews have closed or explicitly accepted blocking findings. Record each documentation path and `Complete` status in Artifact Index, then set Current Handoff to Skill Extractor, UI Skill Extractor, or `Complete`.
 
 ---
 
@@ -25,7 +25,7 @@ Activate this agent when:
 
 ## Required Inputs
 Before starting, you need:
-1. The original plan (issue body `## Plan` section)
+1. The original plan (`plan:` in `state.yaml`)
 2. The list of files changed/created by the Executor
 3. Access to read those files
 4. The target audience — who will read this? (internal dev, API consumer, end user?)
@@ -54,7 +54,7 @@ You may produce more than one type if the feature warrants it.
 ## Writing Process
 
 ### Phase 1 — Read Before Writing
-- [ ] Read the full spec (issue body `## Plan`)
+- [ ] Read the full spec (`plan:` in `state.yaml`)
 - [ ] Read every file that was created or modified
 - [ ] Understand what the code *actually* does — not what the spec says it should do
 - [ ] Note any discrepancy between spec and implementation — document what was built, not what was planned

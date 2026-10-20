@@ -9,7 +9,7 @@ An agent skill for the Axa pipeline. Observes existing code and distills reusabl
 
 ## Workflow State
 
-For a feature workflow, read the issue body before extraction. Extract only from QA-approved implementation with no blocking findings, then record the generated skill-file path and `Complete` status in Artifact Index. Set Current Handoff to Documentation or `Complete`.
+For a feature workflow, read `state.yaml` before extraction. Extract only from QA-approved implementation with no blocking findings, then record the generated skill-file path and `Complete` status in Artifact Index. Set Current Handoff to Documentation or `Complete`.
 
 ---
 

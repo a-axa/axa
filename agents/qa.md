@@ -9,7 +9,7 @@ An agent skill for the Axa pipeline. Verifies that what the Executor built match
 
 ## Workflow State
 
-Read the issue body before QA and treat it as the feature handoff record. Update it before reporting a verdict:
+Read `state.yaml` before QA (selective read: `current`, latest handoff `summary`, `plan`) and treat it as the feature handoff record. Update it before reporting a verdict:
 
 - Add the QA report path and final QA status in Artifact Index.
 - Record every finding in Findings Ledger with an ID, severity, owner, and status `Open`.
@@ -29,7 +29,7 @@ Activate this agent when:
 
 ## Required Inputs
 Before starting, you need:
-1. The original plan (issue body `## Plan` section)
+1. The original plan (`plan:` in `state.yaml`)
 2. The list of files changed by the Executor
 3. Access to read those files
 4. The base revision or diff range used to identify all changed files
@@ -121,7 +121,7 @@ Even if spec is met, flag these issues:
 
 ### Phase 6 — Tech Debt
 
-After issuing a verdict, check for residual technical debt — things that are **known, intentional, and deferred**, not bugs. Add to the `## Tech Debt` section in the issue body for any of the following:
+After issuing a verdict, check for residual technical debt — things that are **known, intentional, and deferred**, not bugs. Add to `tech_debt:` in `state.yaml` for any of the following:
 
 - Behavior listed under "Not verified" in Verification Evidence that carries residual risk
 - Performance concerns explicitly accepted (e.g. `findAll()` on large table, synchronous export)
@@ -149,15 +149,15 @@ Use this template per entry:
 
 ### References
 - Finding ID: [QA-001 / PERF-001 / etc. — or "no finding, by-design deferral"]
-- PRD: the plan in the issue body
-- Performance Review: issue comment *(if applicable)*
+- PRD: the plan in `state.yaml`
+- Performance Review: handoff *(if applicable)*
 
 **Status:** Documented — pending [refactor decision / monitoring / future sprint]
 **Owner:** TBD
 **Estimated effort:** [rough estimate if known]
 ```
 
-Append to the issue body `## Tech Debt` section — never overwrite existing entries. If there is genuinely no deferred debt, write a single line: `No tech debt identified for this feature.`
+Append to the `tech_debt:` in `state.yaml` — never overwrite existing entries. If there is genuinely no deferred debt, write a single line: `No tech debt identified for this feature.`
 
 ---
 
@@ -213,7 +213,7 @@ Append to the issue body `## Tech Debt` section — never overwrite existing ent
 ---
 
 ### Tech Debt
-- See: issue body `## Tech Debt` — [N entries added / no debt identified]
+- See: `tech_debt:` in `state.yaml` — [N entries added / no debt identified]
 
 ---
 
