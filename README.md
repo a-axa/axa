@@ -20,7 +20,12 @@ Most agent pipelines let the same session write the code and review it — that'
 - verdicts are **bound to the exact commit SHA** — a new commit invalidates them
 - fix ping-pong is **capped at 2 rounds**, then it escalates to you
 
-And if you have more than one model available, reviewers run on a **different model** than builders. Best effort, honestly reported. See `RULES.md` § Separation of Duties (pattern paired from [claudex-loop](https://github.com/chaseai-yt/claudex-loop)). Example output: [`examples/task-0042/thread.html`](examples/task-0042/thread.html).
+And if you have more than one model available, reviewers run on a **different model** than builders. Concrete setup with a local model router (e.g. 9router): two combos, two terminals, `state.yaml` as the handoff between them —
+
+- terminal 1, reasoning combo — plan + review: Decomposer → Planner → Doubt Review → QA
+- terminal 2, fast combo — execution: Executor → Unit Test Writer → Documentation
+
+Best effort, honestly reported. See `RULES.md` § Separation of Duties (pattern paired from [claudex-loop](https://github.com/chaseai-yt/claudex-loop)). Example output: [`examples/task-0042/thread.html`](examples/task-0042/thread.html).
 
 ## 🧠 It learns your taste
 

@@ -38,7 +38,7 @@ verification:
 handoffs:
   - at: 2026-10-15T09:12:00+07:00
     from: decomposer
-    model: "kr/claude-sonnet-4.5"
+    model: "sonnet-4.5"
     to: planner
     summary: "Scope decomposed: 3 test targets (happy path, fallthrough, N+1 guard). No UI, no migration."
     detail: "Decomposer output: assignment engine has 3 public entry points; fallthrough logic branches on 4 conditions; DB layer untested."
@@ -46,7 +46,7 @@ handoffs:
     artifacts: []
   - at: 2026-10-15T09:40:00+07:00
     from: planner
-    model: "kr/claude-sonnet-4.5"
+    model: "sonnet-4.5"
     to: doubt-review
     summary: "Plan drafted: 3 steps, P2 is the risky one (fallthrough matrix). Waiting for your approval."
     detail: "Full planner spec: 14 edge cases enumerated; ruled out property-based testing (overkill for 4-branch matrix); P2 estimated 60% of effort."
@@ -54,7 +54,7 @@ handoffs:
     artifacts: []
   - at: 2026-10-15T10:05:00+07:00
     from: doubt-review
-    model: "ag/claude-sonnet-4-6"
+    model: "sonnet-4.5"
     to: executor
     summary: "READY. One risk knowingly accepted: timing-sensitive assertion may flake on slow CI."
     detail: "Doubt Review verdict: plan is sound. 14 edge cases cover the matrix. Accepted risk: QA-002 timing assertion — accepted because it guards real behavior and flakes loudly, not silently."
@@ -62,7 +62,7 @@ handoffs:
     artifacts: []
   - at: 2026-10-15T13:20:00+07:00
     from: executor
-    model: "kr/claude-sonnet-4.5"
+    model: "deepseek-flash"
     to: unit-test-writer
     summary: "Implementation done. Engine refactored for testability; no behavior change."
     detail: "Extracted pure decision function from the DB-coupled path so the matrix is unit-testable without MySQL. Commit 5f11a02."
@@ -70,7 +70,7 @@ handoffs:
     artifacts: ["commit 5f11a02"]
   - at: 2026-10-15T15:47:00+07:00
     from: unit-test-writer
-    model: "kr/claude-sonnet-4.5"
+    model: "deepseek-flash"
     to: qa
     summary: "Caught a REAL N+1 bug in the assignment query while writing tests. Fixed, test now guards it."
     detail: "While covering the fallthrough matrix, the writer noticed the assignment query ran once per lead (N+1). Fixed with a single batched query; added a query-count assertion so it can never regress silently. Commit 6c0196c."
@@ -78,7 +78,7 @@ handoffs:
     artifacts: ["commit 6c0196c"]
   - at: 2026-10-15T16:30:00+07:00
     from: qa
-    model: "ag/claude-sonnet-4-6"
+    model: "sonnet-4.5"
     to: documentation
     summary: "PASS: 46 tests / 107 assertions, all green. 2 findings ledgered (1 fixed, 1 accepted risk)."
     detail: "QA evidence: full phpunit run output archived; lint clean; manual dry-run on staging seed matched the spec table row-for-row. QA-001 fixed and verified; QA-002 accepted as known-flaky with rationale."

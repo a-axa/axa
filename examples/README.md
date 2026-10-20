@@ -13,4 +13,4 @@ python3 .axa/render-thread.py --task task-0042
 
 (The script ships in `templates/` and is copied to your project's `.axa/` on first run.)
 
-Note the `model:` on each handoff — build stages ran on one model, review stages (Doubt Review, QA) on another. That's the anti-bias rule in action (RULES.md § Separation of Duties).
+Note the `model:` on each handoff — plan + review stages ran on a strong-reasoning model (`sonnet-4.5`), execution stages on a fast one (`deepseek-flash`). That's the anti-bias rule in action (RULES.md § Separation of Duties).
