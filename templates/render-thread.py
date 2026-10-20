@@ -155,11 +155,13 @@ def render_handoffs(handoffs):
             f'<span class="chip">{esc(a)}</span>' for a in (h.get("artifacts") or [])
         )
         chips = f'<div class="chips">{artifacts}</div>' if artifacts else ""
+        model = (h.get("model") or "").strip()
+        model_html = f'<span class="via">model: {esc(model)}</span>' if model else ""
         cards.append(f"""
         <div class="handoff">
           <div class="chead">
             <span class="route">{esc(h.get("from", "?"))} &rarr; {esc(h.get("to", "?"))}</span>
-            <span class="via">approved via {esc(h.get("approved_via", "pipeline"))}</span>
+            <span class="via">approved via {esc(h.get("approved_via", "pipeline"))}</span>{model_html}
             <time>{fmt_time(h.get("at", ""))}</time>
           </div>
           <div class="cbody">

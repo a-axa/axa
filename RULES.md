@@ -207,6 +207,20 @@ When two specialist reviews contradict each other (for example Security requires
 3. STOP and present the trade-off to the human. The human arbitrates.
 4. Record the decision and its rationale in `state.yaml`. Only then may the Executor proceed.
 
+## Separation of Duties (anti-bias)
+
+Whoever built it never grades it. A reviewer that shares the builder's session will rationalize the same decisions instead of testing them. (Pattern paired from [claudex-loop](https://github.com/chaseai-yt/claudex-loop), adapted for single-model reality: best effort, honestly reported.)
+
+1. **Never review your own work.** Before QA / Doubt Review / specialist review starts, check the handoff log: if the same session authored the code under review, STOP — discard any draft verdict, respawn fresh from `state.yaml`, and note the reset in your handoff.
+2. **Fresh session per review stage.** Each review stage runs as a new agent whose only input is `state.yaml` (+ the repo). Never run Executor→QA or Planner→Doubt Review in one session.
+3. **Blind-first order.** Read in this order: `plan:` → the code → form your own findings → *then* read the previous handoff `summary`. Never let the builder's summary frame your review.
+4. **Adversarial stance.** Assume at least one defect exists. A review with zero findings must document every check performed and why each passed — "looks good" is a failed review. Zero findings is valid; it is not proof of exhaustive correctness.
+5. **Re-run, don't trust.** Execute test/build/proof commands yourself; never copy the previous stage's claimed results into your verdict.
+6. **Verdict bound to SHA.** A PASS / READY verdict is bound to the exact commit SHA reviewed. Any new commit after the verdict invalidates it — re-verify, don't extend.
+7. **Round budgets.** Executor↔QA fix ping-pong is capped at 2 rounds; Planner↔Doubt Review at 2 rounds. When the budget is exhausted, report remaining findings and escalate to the human instead of manufacturing convergence.
+8. **Coverage and limitations.** Every review reports what it checked AND what it did not check.
+9. **Record the model.** Each handoff records `model:` — the model that actually ran the stage. When a different model is available (e.g. via 9router), run review stages on a different model than the build stages: the closest thing to truly independent review. Report the requested vs. observed model honestly; never silently substitute.
+
 ## Session Recovery
 
 If your context was compacted, the session restarted, or you are picking up existing work:

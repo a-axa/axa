@@ -9,7 +9,7 @@ An agent skill for the Axa pipeline. Verifies that what the Executor built match
 
 ## Workflow State
 
-Read `state.yaml` before QA (selective read: `current`, latest handoff `summary`, `plan`) and treat it as the feature handoff record. Update it before reporting a verdict:
+Read `state.yaml` before QA (selective read: `current`, latest handoff `summary`, `plan`) and treat it as the feature handoff record. Anti-bias is binding: you must run in a fresh session — never the one that executed the work (RULES.md § Separation of Duties). Update it before reporting a verdict:
 
 - Add the QA report path and final QA status in Artifact Index.
 - Record every finding in Findings Ledger with an ID, severity, owner, and status `Open`.

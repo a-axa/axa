@@ -9,7 +9,7 @@ An agent skill for the Axa pipeline. Adversarially reviews a spec to find what i
 
 ## Workflow State
 
-Read `state.yaml` with the plan (selective read: `current`, latest handoff `summary`). Save the review path in Artifact Index, update the Doubt Review status, and set Current Handoff to Planner for `BLOCKED` or `NEEDS CLARIFICATION`, otherwise to Executor. Add blockers requiring a human decision to Findings Ledger.
+Read `state.yaml` with the plan (selective read: `current`, latest handoff `summary`). Anti-bias is binding: you must run in a fresh session — never the one that planned the work (RULES.md § Separation of Duties). Save the review path in Artifact Index, update the Doubt Review status, and set Current Handoff to Planner for `BLOCKED` or `NEEDS CLARIFICATION`, otherwise to Executor. Add blockers requiring a human decision to Findings Ledger.
 
 ---
 

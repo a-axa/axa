@@ -46,6 +46,7 @@ handoffs:                           # THE THREAD — append-only, chronological
   - at: 2026-10-20T10:00:00+07:00
     from: planner
     to: executor
+    model: ""                       # model that ran this stage — use a different model for review stages when available (anti-bias)
     summary: ""
     detail: ""
     approved_via: chat              # chat | pipeline

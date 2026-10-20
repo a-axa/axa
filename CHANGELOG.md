@@ -2,6 +2,12 @@
 
 All notable changes to Axa are documented here.
 
+## [Unreleased]
+
+### Added
+- Anti-bias rules (`RULES.md` § Separation of Duties, pattern paired from claudex-loop): never review your own work, fresh session per review stage, blind-first review order, adversarial stance, re-run-don't-trust, verdicts bound to commit SHA, 2-round fix budgets, coverage + limitations reporting, per-handoff `model:` recording (use a different model for review stages when available, e.g. via 9router)
+- `thread.html` now shows the model per handoff
+
 ## [2.0.0] - 2026-10-20
 
 ### Breaking
