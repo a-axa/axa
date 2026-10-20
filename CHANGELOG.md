@@ -2,6 +2,18 @@
 
 All notable changes to Axa are documented here.
 
+## [2.0.0] - 2026-10-20
+
+### Breaking
+- State backend moved from GitHub issues to local YAML (`docs/adr/001-local-yaml-html-state-backend.md`): `.axa/tasks/<task-id>/state.yaml` is the single source of truth (plan + status + handoff thread); `thread.html` is generated for human review
+- `gh` CLI is no longer required — or referenced — anywhere; hard prerequisite is now Python 3 + PyYAML (for the renderer)
+- Deleted: `templates/issue-template.md`, `templates/tickets.template.md`; legacy `.axa/tickets.md` ignored
+
+### Added
+- `templates/state-template.yaml`: local task state template with the binding token protocol in its header comments
+- `templates/render-thread.py`: generates per-task `thread.html` + `index.html` from `state.yaml` (copied to the project's `.axa/` on first run)
+- Token protocol: agents read only `current:`, the latest handoff `summary`, and their own `plan` steps per stage; handoffs split into `summary` (≤ ~280 chars) + `detail`
+
 ## [1.0.1] - Unreleased
 
 ### Added

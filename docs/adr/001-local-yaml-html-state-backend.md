@@ -1,6 +1,8 @@
 # ADR: Local YAML + HTML state backend for Axa (default)
 
 - **Status:** Accepted (core decision by Aska; detail decisions delegated to Miu 2026-10-20 — final veto stays with Aska on read-through)
+- **Amended:** 2026-10-20 — the GitHub-issue opt-in backend is **dropped entirely**
+  (see Amendment below). Axa is local-only from v2.0.0.
 - **Date:** 2026-10-20
 - **Author:** Aska (drafted with Miu)
 - **Decided:** 2026-10-20 — Aska approved the direction; the six detail
@@ -8,6 +10,24 @@
 - **Supersedes:** "GitHub issues are the state backend" (v0.1.0, documented in
   `SKILL.md` / `RULES.md`; this ADR retroactively records the backend decision
   so it can be changed deliberately)
+
+## Amendment (2026-10-20): GitHub backend removed
+
+The original decision kept the GitHub-issue backend as a per-task opt-in for
+teams needing remote visibility. **Aska killed it the same day**: nobody uses
+Axa besides him, so the dual-backend maintenance cost is unjustified.
+
+Consequences of the amendment:
+
+- There is no `backend:` field. `state.yaml` is the only state backend. Period.
+- `templates/issue-template.md` and `templates/tickets.template.md` are deleted.
+- Every `gh` CLI reference is removed from `SKILL.md`, `RULES.md`, `README.md`,
+  and `agents/*.md`. The `gh` STOP gate is gone; the hard prerequisites are now
+  Python 3 + PyYAML (for `render-thread.py`).
+- `.axa/tickets.md` (v0.1.x) is legacy and ignored; the task registry is derived
+  from `.axa/tasks/`.
+- If a team ever needs remote visibility again, that is a new ADR — not a
+  resurrection of this one.
 
 ## Context
 
@@ -44,8 +64,8 @@ with extra steps.
 
 ## Decision
 
-Make **local YAML + generated HTML** the default state backend. Keep the
-GitHub-issue backend as an opt-in for teams that need remote visibility.
+**Local YAML + generated HTML is the only state backend.** (Amended 2026-10-20:
+the GitHub-issue opt-in originally proposed here was dropped — see Amendment.)
 
 - `.axa/tasks/<task-id>/state.yaml` — the source of truth. Read and written
   by agents. Committed to git (the audit trail survives in version history).
@@ -53,8 +73,8 @@ GitHub-issue backend as an opt-in for teams that need remote visibility.
   hand-written. A GitHub-comment-style timeline for human eyes. Regenerated
   by each agent after it updates the YAML, so a human checks progress in a
   browser at **zero token cost** instead of interrogating an agent.
-- `backend: local | github` field per task (see Migration). `gh` STOP gates
-  in `SKILL.md` apply only when `backend: github`.
+- `backend:` field: **removed** (amendment 2026-10-20) — there is exactly one
+  backend. `gh` CLI is not a prerequisite for anything anymore.
 
 This is deliberately **not** a return to HITL·Work's flat markdown. The
 handoff list is an ordered thread (the thing issues got right), and the HTML
@@ -82,7 +102,6 @@ axa_version: "0.2"
 id: task-0042
 title: "Salespersons & Lead Tables"
 created: 2026-10-20
-backend: local                      # local | github
 stage: executing                    # decomposing|planning|doubt-review|executing|qa|review|documenting|extracting|done
 mode: Standard                      # Full Pipeline | Standard | Quick
 mode_rationale: "CRUD + UI, no migration risk"
@@ -166,19 +185,17 @@ protocol** that a structured format makes enforceable (to be written into
 - Renders like a GitHub issue page: header with stage badge, plan checklist
   with progress, handoff cards in chronological order (the thread), findings
   ledger table, verification evidence, tech debt.
-- `.axa/tasks/index.html` (in scope for v0.2, minimal — see Decisions): task
+- `.axa/tasks/index.html` (in scope for v2.0, minimal — see Decisions): task
   list with stage badges — the local equivalent of the issue list. Both
   backends appear; GitHub-backed tasks link out via `issue_url`.
 - `thread.html` is a build artifact: gitignored, regenerable at any time.
 
-## Backend option: GitHub mode retained
+## GitHub backend: removed (amendment 2026-10-20)
 
-- `backend: github` keeps v0.1.0 behavior exactly (issue body/comments/labels,
-  `gh` STOP gates, `templates/issue-template.md`).
-- Default for **new** tasks: `local`. Chosen per task, not per project, so a
-  solo dev can run local 95% of the time and spin up a GitHub-backed task when
-  a teammate needs visibility.
-- Existing open GitHub-backed tasks are untouched.
+The v0.1.0 GitHub-issue backend is gone, not opt-in. `templates/issue-template.md`
+and `templates/tickets.template.md` are deleted; every `gh` reference is removed
+from docs and agents. Rationale: the only user is Aska; carrying a second backend
+for hypothetical teams is unjustified maintenance.
 
 ## What this is not
 
@@ -186,28 +203,28 @@ protocol** that a structured format makes enforceable (to be written into
   the weakness this design explicitly avoids. Axa-local keeps the ordered,
   per-handoff thread and renders it as a thread.
 - **Not a second source of truth.** `state.yaml` is the only writable state.
-  `thread.html` is derived. The issue body stays the source of truth only for
-  `backend: github` tasks.
+  `thread.html` is derived.
 
-## Changes required (v0.2.0)
+## Changes required (v2.0.0)
 
-1. `SKILL.md`: backend-aware STOP gates (`gh` check only for
-   `backend: github`); task creation writes `state.yaml` from
-   `templates/state-template.yaml`; add the selective-read and
-   summary/detail handoff protocols; `render-thread.py` runs after each
-   handoff.
-2. New: `templates/state-template.yaml`, `.axa/render-thread.py`,
-   `.axa/tasks/` layout, `.gitignore` entry for `thread.html`.
+1. `SKILL.md`: STOP gates rewritten — the `gh` auth gate is deleted; task
+   creation writes `state.yaml` from `templates/state-template.yaml`; add the
+   selective-read and summary/detail handoff protocols; `render-thread.py`
+   runs after each handoff.
+2. New: `templates/state-template.yaml`, `templates/render-thread.py`
+   (copied to the project's `.axa/` on first run), `.axa/tasks/` layout,
+   `.gitignore` entry for `thread.html`.
    (In the skill repo the renderer ships as `templates/render-thread.py` and
    is copied to the project's `.axa/` on first run — same convention as
    `templates/tickets.template.md` → `.axa/tickets.md`. `.axa/tasks/` lives
    in the user's project, not in this repo.)
-3. `RULES.md`: label mapping (`axa:*`) → `stage:` enum; routing table
-   unchanged.
-4. `README.md`: prerequisites drop the hard `gh` requirement; document both
-   backends and when to pick which.
-5. `CHANGELOG.md`: v0.2.0 entry. `templates/issue-template.md` retained for
-   GitHub mode.
+3. `RULES.md`: label mapping (`axa:*`) → `stage:` enum; First Run Setup creates
+   `.axa/tasks/` and copies the renderer instead of `tickets.md`; routing
+   table unchanged.
+4. `README.md`: prerequisites drop `gh` entirely (now: Python 3 + PyYAML);
+   document the local backend.
+5. `CHANGELOG.md`: v2.0.0 entry. `templates/issue-template.md` and
+   `templates/tickets.template.md` **deleted**.
 
 ## Consequences
 
@@ -223,20 +240,19 @@ protocol** that a structured format makes enforceable (to be written into
 
 **Bad / accepted:**
 - Lose GitHub-native collaboration: teammate comments, notifications, search,
-  label dashboards. Mitigated by keeping GitHub mode opt-in per task.
-- Two backends to maintain in `SKILL.md`/`RULES.md`. Mitigated: GitHub mode
-  is frozen at v0.1.0 behavior; all new development targets local.
+  label dashboards. Accepted outright — the only user is Aska (amendment
+  2026-10-20); a team backend would be a new ADR, not a resurrection.
 - Concurrent writers to one `state.yaml` can clobber each other. Accepted:
   Axa is single-user; one task = one agent at a time is already the pipeline
   invariant.
-- New soft dependency for the renderer (PyYAML — see Open Questions).
+- New soft dependency for the renderer (PyYAML — see Decisions).
 
 ## Decisions (open questions resolved 2026-10-20, delegated to Miu)
 
 1. **Gitignore `thread.html`.** It is regenerable from `state.yaml`; HTML
    diffs in git are noise. `state.yaml` is committed — the audit trail is
    cleaner than issue-body edit history.
-2. **`index.html` is in scope for v0.2, minimal.** Without it there is no
+2. **`index.html` is in scope for v2.0, minimal.** Without it there is no
    "issue list" equivalent and a human must hunt through directories. It is
    ~20 extra lines in the same generator script.
 3. **PyYAML for the renderer.** Agents write YAML as plain text (no parser
@@ -248,10 +264,10 @@ protocol** that a structured format makes enforceable (to be written into
 4. **ADR location: `docs/adr/NNN-slug.md`, starting at 001.** Standard
    convention. This ADR becomes `docs/adr/001-local-yaml-html-state-backend.md`.
 5. **Retire `.axa/tickets.md` as the registry.** The task list is derived from
-   `.axa/tasks/` — single source of truth stays `state.yaml`. GitHub-backed
-   tasks still appear in `index.html` via `issue_url`. The `SKILL.md` STOP
-   gate referencing `tickets.md` is updated to check `.axa/tasks/` instead.
-   (One-time migration of existing `tickets.md` entries on first v0.2 run.)
+   `.axa/tasks/` — single source of truth stays `state.yaml`. The `SKILL.md`
+   STOP gate referencing `tickets.md` is updated to check `.axa/tasks/`
+   instead. (One-time migration of existing `tickets.md` entries on first
+   v2.0 run.)
 6. **Sequential IDs: `task-0042`** (zero-padded, continuing existing ticket
    numbering). Stable and sortable; slugs rot when titles change and make
    for annoying directory names.

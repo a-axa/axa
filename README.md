@@ -2,7 +2,7 @@
 
 Vibe coding is fast. It's also how you ship bugs, lose context between sessions, and end up with code nobody can audit — including your team.
 
-Axa keeps the speed. It adds structure. 17 agents, one job each. The workflow state lives in a **GitHub issue**: the issue body is the live plan + status, comments are the handoff log, labels track the stage. Your team can follow, review, and audit every feature without cloning anything.
+Axa keeps the speed. It adds structure. 17 agents, one job each. The workflow state lives in **local YAML**: `.axa/tasks/<task-id>/state.yaml` holds the live plan + status + handoff thread, and `thread.html` renders it as a readable timeline. Full audit trail in git, zero network calls, minimal token cost.
 
 > Ponytail teaches what to build. Axa teaches how to build it.
 
@@ -27,7 +27,7 @@ Inspired by [Command Code](https://commandcode.ai/)'s taste learning.
 
 ## Prerequisites
 
-- `gh` CLI installed and authenticated (`gh auth status`). Axa stops before any agent runs if this is missing.
+- Python 3 with PyYAML (`pip install pyyaml`) — for rendering `thread.html`. No CLI auth needed; agents read/write `state.yaml` directly.
 
 ## Quick Start
 
@@ -45,11 +45,11 @@ If you prefer not to use the terminal, copy this and paste it into your AI agent
 
 ```
 Load the Axa skill from https://github.com/a-axa/axa and start a new feature.
-Ask me which workflow mode to use (Full / Standard / Quick), then create a GitHub issue
+Ask me which workflow mode to use (Full / Standard / Quick), then create a task state file
 and run the pipeline from there.
 ```
 
-Axa will handle the rest — creating the issue, running the agents, and keeping the state in the issue body.
+Axa will handle the rest — creating the task file, running the agents, and keeping the state in `state.yaml`.
 
 ## Agents
 
@@ -76,9 +76,9 @@ Axa teaches how to build. [ponytail](https://github.com/dietrichgebert/ponytail)
 
 ## Not for everyone
 
-Axa adds process. Every feature gets a GitHub issue, a plan, a QA report, and a findings ledger. That overhead is worth it when you need audit trails, async team visibility, or a ticket-driven workflow. It's not worth it for a quick one-liner fix — use Quick mode or skip Axa entirely.
+Axa adds process. Every feature gets a task file, a plan, a QA report, and a findings ledger. That overhead is worth it when you need audit trails and a verifiable build record. It's not worth it for a quick one-liner fix — use Quick mode or skip Axa entirely.
 
-If you want the same pipeline without GitHub Issues, see [HITL·Work](https://github.com/a-axa/hitl-work) — same agents, local files.
+v2.0 moved the state backend from GitHub issues to local YAML — see [docs/adr/001-local-yaml-html-state-backend.md](docs/adr/001-local-yaml-html-state-backend.md). For the same pipeline with plain-Markdown local tracking (no thread model), see [HITL·Work](https://github.com/a-axa/hitl-work).
 
 ## License
 

@@ -201,10 +201,6 @@ def render_thread(state):
     title = state.get("title", "(untitled)")
     stage = state.get("stage", "?")
     cur = state.get("current") or {}
-    backend = state.get("backend", "local")
-    issue_url = state.get("issue_url")
-    backend_html = (f' &middot; <a href="{esc(issue_url)}">GitHub issue</a>'
-                    if backend == "github" and issue_url else f" &middot; backend: {esc(backend)}")
 
     plan = state.get("plan") or []
     handoffs = state.get("handoffs") or []
@@ -228,7 +224,7 @@ def render_thread(state):
 <div class="header">
   <h1><span class="tid">{esc(tid)}</span> {esc(title)}</h1>
   <div>{badge(stage)} <span class="meta">mode: {esc(state.get("mode", ""))} ·
-  created {esc(state.get("created", ""))}{backend_html}</span></div>
+  created {esc(state.get("created", ""))}</span></div>
 </div>
 
 <div class="current">
@@ -270,7 +266,6 @@ def render_index(tasks):
     for tid, state in sorted(tasks.items()):
         stage = state.get("stage", "?")
         title = state.get("title", "(untitled)")
-        backend = state.get("backend", "local")
         cur = state.get("current") or {}
         nxt = cur.get("next_agent", "?")
         plan = state.get("plan") or []
@@ -279,11 +274,10 @@ def render_index(tasks):
         rows.append(
             f"<tr><td><span class='mono'>{esc(tid)}</span></td>"
             f"<td><a href='{esc(tid)}/thread.html'>{esc(title)}</a></td>"
-            f"<td>{badge(stage)}</td><td>{esc(nxt)}</td>"
-            f"<td>{esc(backend)}</td><td>{prog}</td></tr>"
+            f"<td>{badge(stage)}</td><td>{esc(nxt)}</td><td>{prog}</td></tr>"
         )
     body = ("<table class='idx-table'><tr><th>ID</th><th>Title</th><th>Stage</th>"
-            "<th>Next agent</th><th>Backend</th><th>Plan</th></tr>"
+            "<th>Next agent</th><th>Plan</th></tr>"
             f"{''.join(rows)}</table>" if rows
             else '<p class="empty">No tasks yet.</p>')
     return f"""<!DOCTYPE html>

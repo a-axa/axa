@@ -1,13 +1,11 @@
 # Axa Rules
 
-Detail rules behind `SKILL.md` (the index). The workflow state lives in a GitHub issue instead of local files. Read the sections relevant to your stage before acting.
+Detail rules behind `SKILL.md` (the index). The workflow state lives in local YAML (`.axa/tasks/<task-id>/state.yaml`). Read the sections relevant to your stage before acting.
 
 ## Prerequisites
 
-- `gh` CLI installed and authenticated (`gh auth status`). STOP if it is not: ask the user to set it up before any agent runs.
-- Minimum `gh` CLI version: **2.40.0** (`gh --version`). Earlier versions have GraphQL issues with `gh issue view`. If older: ask the user to update before continuing.
-- The repository must be a GitHub repo (`gh` resolves the current repo). Axa does not work outside GitHub.
-- Use `gh issue view <number> --json body,comments,labels` instead of plain `gh issue view` to avoid GraphQL deprecation errors from Projects (classic).
+- Python 3 with PyYAML (`pip install pyyaml`) — for rendering `thread.html` via `.axa/render-thread.py`.
+- No CLI auth needed. Axa agents read/write `state.yaml` directly; the human reviews progress in the generated `thread.html`.
 
 ## First Run Setup
 
@@ -15,21 +13,14 @@ Before any agent runs, check whether `.axa/` exists in the project root:
 
 ```
 if .axa/ does not exist:
-  mkdir -p .axa
-  cp <skill-root>/templates/tickets.template.md .axa/tickets.md
+  mkdir -p .axa/tasks
+  cp <skill-root>/templates/render-thread.py .axa/render-thread.py
   touch .axa/preferences.md
 ```
 
 `<skill-root>` is wherever `npx skills` installed Axa — check `.claude/skills/axa/`, `.agents/skills/axa/`, `~/.claude/skills/axa/`, or `~/.agents/skills/axa/`. Use the first match found.
 
-If `tickets.md` already exists, do not overwrite it. If the template cannot be found, create `.axa/tickets.md` with this content:
-
-```markdown
-# Axa Ticket Registry
-
-slug -> issue number
-
-```
+Legacy `.axa/tickets.md` (v1.x, slug → issue number registry) is ignored — the task registry is derived from `.axa/tasks/` by the renderer.
 
 Only after `.axa/` is confirmed to exist may the pipeline continue.
 
@@ -100,19 +91,19 @@ teal-dark text + teal-soft background + font-weight 600. No decoration.
 - Anything already captured in a codebase skill file
 - Duplicate of an existing entry — check before appending
 
-## Issue State & Artifacts
+## Task State & Artifacts
 
-For each non-trivial feature, create one GitHub issue and record `slug -> issue number` in `.axa/tickets.md`. The issue body is the live state: copy `templates/issue-template.md` into it at creation. Every agent must read the issue body before acting (`gh issue view <number> --json body,comments,labels`) and update only the fields belonging to its role before handoff. Keep the plan, routing decisions, findings ledger, verification evidence, and session log current at every handoff.
+For each non-trivial feature, create one task: copy `templates/state-template.yaml` to `.axa/tasks/<task-id>/state.yaml` (sequential IDs: `task-0042`, `task-0043`, …). The YAML is the live state. Every agent must read `current:`, the latest handoff `summary`, and its own `plan` steps before acting (token protocol in `SKILL.md`) and update only the fields belonging to its role before handoff. Keep the plan, routing decisions, findings ledger, verification evidence, and handoff thread current at every handoff; regenerate `thread.html` after each handoff.
 
-- **Issue body** = plan + live status (updated in place via `gh issue edit`)
-- **Issue comments** = handoff log and reports (each stage posts one summary comment: what was done, key decisions, what is next)
-- **Labels** = pipeline stage: `axa:planning`, `axa:executing`, `axa:qa`, `axa:review`, `axa:done`
-- **Local files** = only `.axa/preferences.md` (project preferences) and `.axa/tickets.md` (slug -> issue number registry)
+- **`state.yaml`** = plan + live status + handoff thread (updated in place)
+- **Handoffs** = ordered handoff log (each stage appends one: `summary` + `detail`, what was done, key decisions, what is next)
+- **`stage:`** = pipeline stage: `decomposing`, `planning`, `doubt-review`, `executing`, `qa`, `review`, `documenting`, `extracting`, `done`
+- **Local files** = `.axa/preferences.md` (project preferences), `.axa/tasks/<task-id>/state.yaml` (task state), `thread.html` (generated view, gitignored)
 
 **Start where:**
-- Large PRD -> **Decomposer** (task list posted as an issue comment)
+- Large PRD -> **Decomposer** (task list appended as a handoff)
 - New feature/bug/refactor -> **Planner**
-- Plan approved in issue body -> **Executor**
+- Plan approved in `state.yaml` -> **Executor**
 - Code written -> **QA** or specialist review
 - Code needs triage -> **Debug**
 - Markdown spec to test -> **Unit Test Writer**
@@ -141,7 +132,7 @@ Axa pairs well with [ponytail](https://github.com/DietrichGebert/ponytail), a sk
    - `no` → append exactly `ponytail: declined` to `.axa/preferences.md`, re-read and confirm; continue without it.
    - `never ask again` → append exactly `ponytail: never-ask` to `~/.axa/preferences.md`, re-read and confirm; never run this gate again on any project.
    Only after the answer is recorded and confirmed may the pipeline continue.
-3. **Combine only when present.** When the ponytail skill is available (pre-installed or just installed), the Planner and Executor must read its rules. The Planner runs the minimality ladder for every planned piece of new code while writing the spec (see `agents/planner.md`). Rungs: 1. does it need to exist, 2. already in this codebase, 3. standard library or platform feature, 4. installed dependency (never add one for a few lines), 5. one line a reader gets at a glance, 6. otherwise the minimum that works. Record the justifying rung (or the existing code reused) per spec item. Full Pipeline uses the full ladder; Standard+ and Standard keep the YAGNI check without per-item records; Quick is trivially minimal by definition. The Executor implements the minimum per spec, reuse-first: no abstraction, wrapper, type conversion, option, config, boilerplate, or "for later" code nobody asked for. Deletion beats addition. Bug fixes: grep every caller first, then fix the root cause once in the shared code. A deliberate shortcut gets a `shortcut: <the limit>, <when to upgrade>` comment. QA adds a cut-list to Phase 5 findings: flag over-engineering (unasked abstractions, wrappers, boilerplate, speculative flexibility) as Warning findings. Never flag the never-cut list: validation at trust boundaries, error handling that prevents data loss, security, accessibility, anything the user explicitly asked for. Harvest `shortcut:` comments into the issue body `## Tech Debt` section. Note: `npx skills add` copies the skill folders but does not write a session auto-load pointer; Axa agents load the ponytail rules explicitly, so no pointer is needed.
+3. **Combine only when present.** When the ponytail skill is available (pre-installed or just installed), the Planner and Executor must read its rules. The Planner runs the minimality ladder for every planned piece of new code while writing the spec (see `agents/planner.md`). Rungs: 1. does it need to exist, 2. already in this codebase, 3. standard library or platform feature, 4. installed dependency (never add one for a few lines), 5. one line a reader gets at a glance, 6. otherwise the minimum that works. Record the justifying rung (or the existing code reused) per spec item. Full Pipeline uses the full ladder; Standard+ and Standard keep the YAGNI check without per-item records; Quick is trivially minimal by definition. The Executor implements the minimum per spec, reuse-first: no abstraction, wrapper, type conversion, option, config, boilerplate, or "for later" code nobody asked for. Deletion beats addition. Bug fixes: grep every caller first, then fix the root cause once in the shared code. A deliberate shortcut gets a `shortcut: <the limit>, <when to upgrade>` comment. QA adds a cut-list to Phase 5 findings: flag over-engineering (unasked abstractions, wrappers, boilerplate, speculative flexibility) as Warning findings. Never flag the never-cut list: validation at trust boundaries, error handling that prevents data loss, security, accessibility, anything the user explicitly asked for. Harvest `shortcut:` comments into `tech_debt:` in `state.yaml`. Note: `npx skills add` copies the skill folders but does not write a session auto-load pointer; Axa agents load the ponytail rules explicitly, so no pointer is needed.
 
 ## Agents
 
@@ -167,7 +158,7 @@ Axa pairs well with [ponytail](https://github.com/DietrichGebert/ponytail), a sk
 
 ## Workflow Modes
 
-The user explicitly chooses the mode. Before any agent runs: STOP, present all four modes below with your recommendation (the lowest safe mode per the eligibility rules), and wait for the user's choice. Do not proceed until the user has chosen. If the chosen mode violates the eligibility rules, refuse with a concrete explanation and ask again. Record the chosen mode in the issue body. In non-interactive runs where the user cannot be reached, use the lowest safe mode and record that the choice was automatic. Any risk signal escalates the work immediately; never use Quick mode to bypass a required review.
+The user explicitly chooses the mode. Before any agent runs: STOP, present all four modes below with your recommendation (the lowest safe mode per the eligibility rules), and wait for the user's choice. Do not proceed until the user has chosen. If the chosen mode violates the eligibility rules, refuse with a concrete explanation and ask again. Record the chosen mode in `state.yaml`. In non-interactive runs where the user cannot be reached, use the lowest safe mode and record that the choice was automatic. Any risk signal escalates the work immediately; never use Quick mode to bypass a required review.
 
 | Mode | Use for | Required path | Not allowed when |
 |---|---|---|---|
@@ -178,7 +169,7 @@ The user explicitly chooses the mode. Before any agent runs: STOP, present all f
 
 **Quick Change Record** must state: target file, exact intended change, expected behavior, rollback method, and why the change is eligible for Quick mode. Executor stops and escalates to Standard or Full if the actual code contradicts that record.
 
-**Standard+ UI/UX Planner (lite mode):** when `pattern: established` is recorded in the issue body (the design system tokens, components, and states are already documented and applied on at least one other screen), the UI/UX Planner skips token sheet, full wireframe, and interaction spec. It produces only: which existing components to reuse, which states apply (populated/empty — skip loading/error for server-rendered pages), and copy/microcopy if it differs from existing screens. Full UI/UX spec is still required when introducing a new pattern, a new component, or a new interaction.
+**Standard+ UI/UX Planner (lite mode):** when `pattern: established` is recorded in `state.yaml` (the design system tokens, components, and states are already documented and applied on at least one other screen), the UI/UX Planner skips token sheet, full wireframe, and interaction spec. It produces only: which existing components to reuse, which states apply (populated/empty — skip loading/error for server-rendered pages), and copy/microcopy if it differs from existing screens. Full UI/UX spec is still required when introducing a new pattern, a new component, or a new interaction.
 
 ## Lean Code Discipline
 
@@ -198,11 +189,11 @@ Axa wraps code in a lot of process; the shipped code itself stays lean. Those va
 | Non-trivial business logic | Unit Test Writer, including approved Test Plan |
 | Bug with unknown root cause | Debug Agent before planning a fix |
 
-A required stage may be skipped only when the issue body records the reason and the human accepts the risk.
+A required stage may be skipped only when `state.yaml` records the reason and the human accepts the risk.
 
 ## Re-verification Loop
 
-1. QA or specialist findings receive IDs (`QA-001`, `SEC-001`, `PERF-001`, and so on) in the issue body.
+1. QA or specialist findings receive IDs (`QA-001`, `SEC-001`, `PERF-001`, and so on) in `findings:` in `state.yaml`.
 2. Executor fixes only approved findings and marks them `Fixed` with the changed files.
 3. QA verifies the regression after every fix. The specialist who reported a Critical finding re-checks it before closure.
 4. A finding is closed only as `Fixed`, `Accepted risk` (human decision recorded), or `Deferred` (owner and follow-up recorded).
@@ -212,18 +203,18 @@ A required stage may be skipped only when the issue body records the reason and 
 When two specialist reviews contradict each other (for example Security requires X while Performance requires Y):
 
 1. Do not let the Executor pick a side on its own.
-2. Record both findings in the issue body with status `Open` and note the conflict explicitly.
+2. Record both findings in `findings:` with status `Open` and note the conflict explicitly.
 3. STOP and present the trade-off to the human. The human arbitrates.
-4. Record the decision and its rationale in the issue body. Only then may the Executor proceed.
+4. Record the decision and its rationale in `state.yaml`. Only then may the Executor proceed.
 
 ## Session Recovery
 
 If your context was compacted, the session restarted, or you are picking up existing work:
 
-1. Find the feature state: look up the slug in `.axa/tickets.md` to get the issue number. If several features exist, continue the most recently updated one, or ask the user which one.
-2. Read the issue body and recent comments in full (`gh issue view <number> --json body,comments,labels`). Trust them over your memory of this conversation.
-3. Continue from the **Current Handoff** field in the issue body. Do not re-run stages already marked complete.
-4. If no ticket exists for the requested work, start the pipeline normally (create the issue first).
+1. Find the feature state: open `.axa/tasks/<task-id>/state.yaml`. If several tasks exist, continue the most recently updated one, or ask the user which one.
+2. Read `current:` and the latest handoff `summary` in `state.yaml` (read `detail` or older handoffs only if the summary is insufficient — token protocol in `SKILL.md`). Trust them over your memory of this conversation.
+3. Continue from `current:` in `state.yaml`. Do not re-run stages already marked complete.
+4. If no task file exists for the requested work, start the pipeline normally (create `state.yaml` from `templates/state-template.yaml` first).
 
 ## Instructions
 
@@ -231,21 +222,20 @@ If your context was compacted, the session restarted, or you are picking up exis
 2. **Read `.axa/preferences.md` before acting — no exceptions.** This is the taste-learning loop: apply the recorded taste first, then work. An agent that skips this read is violating the pipeline.
 3. **Follow each agent's process exactly.** Boundaries are intentional.
 4. **Respect the selected mode.** Full Pipeline requires Planner and QA; Standard+ and Standard require Planner Lite and QA; Quick may skip Planner only with a recorded Quick Change Record and minimal QA. Don't skip QA to ship.
-5. **Checkpoints (two channels):**
-   - Chat (primary): stop and wait for the user's approval in the harness.
-   - Issue (async): at every checkpoint also post a comment (`gh issue comment`) summarizing what needs approval. A teammate may approve via issue reply or reaction.
-   - Either channel unblocks; record which channel approved and by whom.
+5. **Checkpoints:**
+   - Stop and wait for the user's approval in chat; at every checkpoint append a handoff in `state.yaml` summarizing what needs approval.
+   - Record the approval in the handoff (`approved_via: chat`).
    - After Decomposer -> human reviews task list. After Planner -> optionally run Doubt Review. After Executor -> optionally run Unit Test Writer (recommended for non-trivial logic). After Unit Test Writer -> QA uses generated tests as baseline. QA FAIL -> return to Executor.
 6. **Specialist reviews report only** — findings go back to Executor to fix.
 7. **Close the loop** with Docs + Skill Extractor after QA passes.
 
 ## Workflow
 
-1. **Setup**: confirm `.axa/` exists and `tickets.md` is present. If not, create them per First Run Setup above. Then run the companion skill gates (anti-slop, ponytail).
+1. **Setup**: confirm `.axa/` exists (with `tasks/` and `render-thread.py`). If not, create them per First Run Setup above. Then run the companion skill gates (anti-slop, ponytail).
 2. **Read preferences** — hard gate: read `.axa/preferences.md` in full before any agent starts work. No agent plans, executes, or reviews until this read is done. Apply all recorded project preferences before any planning or execution.
-3. **Select mode** — STOP and ask the user to choose explicitly (Full / Standard+ / Standard / Quick), presenting your recommendation. Validate the choice against the eligibility rules; refuse unsafe picks with an explanation. Record the mode and reason in the issue body.
-4. **Decompose** *(Full only, optional)* — `agents/decomposer.md`. Output the task list as an issue comment. Stop for review.
-5. **Plan** — Full: `agents/planner.md` full spec. Standard+/Standard: Planner Lite spec. Quick: Quick Change Record only. Show the plan in chat; write it to the issue body only after the user's explicit approval.
+3. **Select mode** — STOP and ask the user to choose explicitly (Full / Standard+ / Standard / Quick), presenting your recommendation. Validate the choice against the eligibility rules; refuse unsafe picks with an explanation. Record the mode and reason in `state.yaml`.
+4. **Decompose** *(Full only, optional)* — `agents/decomposer.md`. Output the task list as a handoff in `state.yaml`. Stop for review.
+5. **Plan** — Full: `agents/planner.md` full spec. Standard+/Standard: Planner Lite spec. Quick: Quick Change Record only. Show the plan in chat; write it to `state.yaml` only after the user's explicit approval.
 6. **Doubt Review** *(required by routing; otherwise Full only when risk warrants it)* — `agents/doubt-review.md`. Verdict: READY / BLOCKED / NEEDS CLARIFICATION.
 7. **Execute** — `agents/executor.md`. One step at a time. Stop and escalate if scope exceeds the selected mode.
 8. **Unit Test Writer** *(required by routing; otherwise optional)* — `agents/unit-test-writer.md`. Test Plan -> approval -> Test Code.

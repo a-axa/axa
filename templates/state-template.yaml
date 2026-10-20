@@ -1,4 +1,4 @@
-# Axa task state — the source of truth for agents (backend: local).
+# Axa task state — the single source of truth for agents.
 # Copy to .axa/tasks/<task-id>/state.yaml and fill in.
 # thread.html is GENERATED from this file by .axa/render-thread.py — never edit it by hand.
 #
@@ -9,12 +9,10 @@
 #   and say why in your own handoff.
 # - `summary` <= ~280 chars, decision-focused. `detail` carries evidence/logs.
 
-axa_version: "0.2"
+axa_version: "2.0"
 id: task-0000
 title: ""
 created: 2026-10-20
-backend: local                      # local | github
-issue_url: null                     # set when backend: github
 stage: planning                     # decomposing|planning|doubt-review|executing|qa|review|documenting|extracting|done
 mode: Standard                      # Full Pipeline | Standard | Quick
 mode_rationale: ""
